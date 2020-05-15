@@ -18,7 +18,6 @@
 
 #black-keys {
     display: flex;
-    width: 60px;
     justify-content: space-between;
 }
 
