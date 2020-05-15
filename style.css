@@ -12,11 +12,14 @@
     align-items: center;
 }
 
-#piano {
+#white-keys {
     display: flex;
-    /* width: 500px;
-    height: 125px; */
-    border: 1px solid black;
+}
+
+#black-keys {
+    display: flex;
+    width: 60px;
+    justify-content: space-between;
 }
 
 .key {
@@ -24,7 +27,3 @@
     flex: 1;
     height: 100%;
 }
-
-/* .key:active { */
-    /* background-color: pink; */
-/* } */
