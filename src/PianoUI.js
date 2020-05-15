@@ -9,9 +9,22 @@ export default class PianoUI extends EventEmitter {
         super();
 
         this.target = target;
+
         this.size = size;
 
         // [lowNote, highNote] - inclusive
+        // ensure range starts and ends with a white key.
+        let whiteKeyIndexes = [0, 2, 4, 5, 7, 9, 11];
+        if (!whiteKeyIndexes.includes(range[0] % 12)) {
+            console.log(`${range[0]} not white key`)
+            range[0] = Math.max( range[0] - 1, 0);
+        }
+
+        if (!whiteKeyIndexes.includes(range[1] % 12)) {
+            console.log(`${range[1]} not white key`)
+            range[1] = Math.max( range[1] - 1, 0);
+        }
+
         this.range = range;
 
         this.mouseState = MOUSEUP;
@@ -30,13 +43,11 @@ export default class PianoUI extends EventEmitter {
     buildUI() {
         this.pianoContainer = document.getElementById(this.target);
 
-
         this.keyContainer = document.createElement('div');
         this.keyContainer.style.width = `${this.size[0]}px`;
         this.keyContainer.style.height = `${this.size[1]}px`;
         this.keyContainer.style.position = 'relative';
         this.keyContainer.style.border = '1px solid green';
-
 
         this.whiteKeyContainer = document.createElement('div');
         this.whiteKeyContainer.setAttribute('id', 'white-keys');
@@ -45,15 +56,13 @@ export default class PianoUI extends EventEmitter {
 
         this.blackKeyContainer = document.createElement('div');
         this.blackKeyContainer.setAttribute('id', 'black-keys');
+        this.blackKeyContainer.style.position = 'absolute';
         this.blackKeyContainer.style.pointerEvents = 'none';
         this.blackKeyContainer.style.width = `100%`;
         this.blackKeyContainer.style.height = `55%`;
 
-        let whiteKeyCount = 0;
-
         let keyPattern = ['w', 'b', 'w', 'b', 'w', 'w', 'b', 'w', 'b', 'w', 'b', 'w'];
-        this.blackKeys = [];
-        this.whiteKeys = [];
+
         for (let i = this.range[0]; i < this.range[1] + 1; i++) {
             let newKey = document.createElement('div');
             newKey.setAttribute('class', 'key');
@@ -76,7 +85,6 @@ export default class PianoUI extends EventEmitter {
                 this.mouseUpKey(e);
             });
 
-            // prevent keys from being dragged
             newKey.addEventListener('dragstart', (e) => {
                 e.preventDefault();
             });
@@ -84,14 +92,12 @@ export default class PianoUI extends EventEmitter {
             if (keyPattern[i % 12] === 'w') {
                 newKey.setAttribute('primaryColor', 'white');
                 newKey.style.backgroundColor = 'white';
-                this.whiteKeys.push(newKey);
                 this.whiteKeyContainer.appendChild(newKey);
-                whiteKeyCount += 1;
             } else {
                 newKey.setAttribute('primaryColor', 'black');
                 newKey.style.backgroundColor = 'black';
                 newKey.style.pointerEvents = 'all';
-                this.blackKeys.push(newKey);
+                this.blackKeyContainer.appendChild(newKey);
             }
 
             if (i % 12 === 4 || i % 12 === 11) {
@@ -99,26 +105,21 @@ export default class PianoUI extends EventEmitter {
                 ghostKey.setAttribute('class', 'key ghost-key');
                 ghostKey.style.opacity = 0;
                 ghostKey.style.pointerEvents = 'none';
-                this.blackKeys.push(ghostKey);
+                this.blackKeyContainer.appendChild(ghostKey);
             }
-
-
         }
 
-        let whiteKeyWidth = this.size[0] / whiteKeyCount;
-        let blackKeyWidth = whiteKeyWidth / 2;
+        let blackKeyMargin = (this.size[0] / this.whiteKeyContainer.children.length) / 8;
 
-        this.blackKeys.forEach(bk => {
-            bk.style.marginLeft = `${blackKeyWidth / 4}px`
-            bk.style.marginRight = `${blackKeyWidth / 4}px`
-            this.blackKeyContainer.appendChild(bk);
-        });
-        this.blackKeyContainer.style.paddingLeft = `${whiteKeyWidth / 2}px`;
-        this.blackKeyContainer.style.paddingRight = `${whiteKeyWidth / 2}px`;
+        for (let bk of this.blackKeyContainer.children) {
+            bk.style.marginLeft = `${blackKeyMargin}px`
+            bk.style.marginRight = `${blackKeyMargin}px`
+        };
 
+        this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin * 4}px`;
+        this.blackKeyContainer.style.paddingRight = `${blackKeyMargin * 4}px`;
 
         this.keyContainer.appendChild(this.blackKeyContainer);
-        this.blackKeyContainer.style.position = 'absolute';
         this.keyContainer.appendChild(this.whiteKeyContainer);
         this.pianoContainer.appendChild(this.keyContainer);
     }
@@ -151,7 +152,7 @@ export default class PianoUI extends EventEmitter {
     setActive(pianoKey) {
         this.setInactive(this.activePianoKey)
         this.activePianoKey = pianoKey;
-        this.activePianoKey.style.backgroundColor = 'pink';
+        this.activePianoKey.style.backgroundColor = 'aqua';
     }
 
     setInactive(pianoKey) {
@@ -159,5 +160,4 @@ export default class PianoUI extends EventEmitter {
             pianoKey.style.backgroundColor = pianoKey.getAttribute('primaryColor');
         }
     }
-
 }
