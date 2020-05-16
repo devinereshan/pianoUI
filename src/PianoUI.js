@@ -13,19 +13,21 @@ const defaultColors = {
     whiteKeyBorder: 'gray',
 }
 
+
 class UIEmiter extends EventEmitter {
     constructor() {
         super();
     }
 
-    noteOn(e) {
-        this.emit('noteOn', { note: e.target.id });
+    noteOn(key) {
+        this.emit('noteOn', { note: key.id });
     }
 
-    noteOff(e) {
-        this.emit('noteOff', { note: e.target.id });
+    noteOff(key) {
+        this.emit('noteOff', { note: key.id });
     }
 }
+
 
 export default class PianoUI {
     constructor(target, size, range, colors, mediaQueries) {
@@ -35,12 +37,13 @@ export default class PianoUI {
         this.range = range.slice(); // [lowNote, highNote] - inclusive
         this.mouseState = MOUSEUP;
         this.colors = {};
-        this.initializeColors(colors);
         this.mediaQueries = mediaQueries;
-        this.registerMediaQueries();
+
+        this._initializeColors(colors);
+        this._registerMediaQueries();
 
         // ensure range starts and ends with a white key.
-        this.correctRange();
+        this._correctRange();
 
         window.addEventListener('mousedown', () => {
             this.mouseState = MOUSEDOWN;
@@ -52,27 +55,14 @@ export default class PianoUI {
 
         this.pianoContainer = document.getElementById(this.target);
 
-        this.buildUI(target, size);
+        this._buildUI(target, size);
     }
 
-    registerMediaQueries() {
-        for (let query in this.mediaQueries) {
-            console.log('media query');
-            matchMedia(query).addListener(
-                this.mediaQueries[query].bind(this)
-            );
-        }
+
+    on(eventName, callback) {
+        return this.emitter.on(eventName, callback);
     }
 
-    initializeColors(colors) {
-        for (let k in defaultColors) {
-            if (colors && colors[k]) {
-                this.colors[k] = colors[k];
-            } else {
-                this.colors[k] = defaultColors[k];
-            }
-        }
-    }
 
     setColors(colors) {
         for (let k in colors) {
@@ -118,7 +108,44 @@ export default class PianoUI {
         }
     }
 
-    correctRange() {
+
+    setKeyActive(pianoKey) {
+        this.setKeyInactive(this.activePianoKey)
+        this.activePianoKey = pianoKey;
+        this.activePianoKey.style.backgroundColor = this.activePianoKey.getAttribute('highlightColor');
+        this.emitter.noteOn(this.activePianoKey);
+    }
+
+
+    setKeyInactive(pianoKey) {
+        if (pianoKey) {
+            pianoKey.style.backgroundColor = pianoKey.getAttribute('primaryColor');
+            this.emitter.noteOff(pianoKey);
+        }
+    }
+
+
+    _registerMediaQueries() {
+        for (let query in this.mediaQueries) {
+            matchMedia(query).addListener(
+                this.mediaQueries[query].bind(this)
+            );
+        }
+    }
+
+
+    _initializeColors(colors) {
+        for (let k in defaultColors) {
+            if (colors && colors[k]) {
+                this.colors[k] = colors[k];
+            } else {
+                this.colors[k] = defaultColors[k];
+            }
+        }
+    }
+
+
+    _correctRange() {
         let whiteKeyIndexes = [0, 2, 4, 5, 7, 9, 11];
         if (!whiteKeyIndexes.includes(this.range[0] % 12)) {
             this.range[0] = Math.max( this.range[0] - 1, 0);
@@ -129,19 +156,15 @@ export default class PianoUI {
         }
     }
 
-    on(eventName, callback) {
-        return this.emitter.on(eventName, callback);
-    }
 
-
-    createKeyContainer(className) {
+    _createKeyContainer(className) {
         let template = document.createElement('template');
         template.innerHTML = `<div class="${className}"></div>`;
         return template.content.firstChild;
     }
 
 
-    createKey(id, className, keyColor, highlightColor, borderColor) {
+    _createKey(id, className, keyColor, highlightColor, borderColor) {
         let template = document.createElement('template');
         template.innerHTML = `
             <div
@@ -161,36 +184,36 @@ export default class PianoUI {
     }
 
 
-    buildUI() {
-        this.keyContainer = this.createKeyContainer(styles.keyContainer);
+    _buildUI() {
+        this.keyContainer = this._createKeyContainer(styles.keyContainer);
         this.keyContainer.style.width = `${this.size[0]}`;
         this.keyContainer.style.height = `${this.size[1]}`;
 
-        this.blackKeyContainer = this.createKeyContainer(styles.blackKeyContainer);
-        this.whiteKeyContainer = this.createKeyContainer(styles.whiteKeyContainer);
+        this.blackKeyContainer = this._createKeyContainer(styles.blackKeyContainer);
+        this.whiteKeyContainer = this._createKeyContainer(styles.whiteKeyContainer);
 
         let keyPattern = ['w', 'b', 'w', 'b', 'w', 'w', 'b', 'w', 'b', 'w', 'b', 'w'];
 
         for (let i = this.range[0]; i < this.range[1] + 1; i++) {
 
             if (keyPattern[i % 12] === 'w') {
-                let newKey = this.createKey(
+                let newKey = this._createKey(
                     i, styles.whiteKey,
                     this.colors.whiteKey,
                     this.colors.whiteKeyHighlight,
                     this.colors.whiteKeyBorder
                 );
-                this.registerEventListeners(newKey);
+                this._registerEventListeners(newKey);
                 this.whiteKeyContainer.appendChild(newKey);
             } else {
-                let newKey = this.createKey(
+                let newKey = this._createKey(
                     i,
                     styles.blackKey,
                     this.colors.blackKey,
                     this.colors.blackKeyHighlight,
                     this.colors.blackKeyBorder
                 );
-                this.registerEventListeners(newKey);
+                this._registerEventListeners(newKey);
                 this.blackKeyContainer.appendChild(newKey);
             }
 
@@ -201,6 +224,15 @@ export default class PianoUI {
             }
         }
 
+        this._resizeBlackKeys();
+
+        this.keyContainer.appendChild(this.blackKeyContainer);
+        this.keyContainer.appendChild(this.whiteKeyContainer);
+        this.pianoContainer.appendChild(this.keyContainer);
+    }
+
+
+    _resizeBlackKeys() {
         let width = this.size[0].split(/([0-9]+)/).slice(1);
         let blackKeyMargin;
 
@@ -218,28 +250,25 @@ export default class PianoUI {
 
         this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin * 4}${width[1]}`;
         this.blackKeyContainer.style.paddingRight = `${blackKeyMargin * 4}${width[1]}`;
-
-        this.keyContainer.appendChild(this.blackKeyContainer);
-        this.keyContainer.appendChild(this.whiteKeyContainer);
-        this.pianoContainer.appendChild(this.keyContainer);
     }
 
-    registerEventListeners(key) {
+
+    _registerEventListeners(key) {
         key.addEventListener('mouseover', (e) => {
             e.preventDefault();
-            this.mouseOverKey(e);
+            this._mouseOverKey(e);
         });
         key.addEventListener('mouseout', (e) => {
             e.preventDefault();
-            this.mouseOutKey(e);
+            this._mouseOutKey(e);
         });
         key.addEventListener('mousedown', (e) => {
             e.preventDefault();
-            this.mouseDownKey(e);
+            this._mouseDownKey(e);
         });
         key.addEventListener('mouseup', (e) => {
             e.preventDefault();
-            this.mouseUpKey(e);
+            this._mouseUpKey(e);
         });
 
         key.addEventListener('dragstart', (e) => {
@@ -248,44 +277,26 @@ export default class PianoUI {
     }
 
 
-    mouseDownKey(e) {
-        this.setActive(e.target);
-        this.emitter.noteOn(e);
+    _mouseDownKey(e) {
+        this.setKeyActive(e.target);
     }
 
 
-    mouseUpKey(e) {
-        this.setInactive(e.target);
-        this.emitter.noteOff(e);
+    _mouseUpKey(e) {
+        this.setKeyInactive(e.target);
     }
 
 
-    mouseOverKey(e) {
+    _mouseOverKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this.setActive(e.target);
-            this.emitter.noteOn(e);
+            this.setKeyActive(e.target);
         }
     }
 
 
-    mouseOutKey(e) {
+    _mouseOutKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this.setInactive(e.target);
-            this.emitter.noteOff(e);
-        }
-    }
-
-
-    setActive(pianoKey) {
-        this.setInactive(this.activePianoKey)
-        this.activePianoKey = pianoKey;
-        this.activePianoKey.style.backgroundColor = this.activePianoKey.getAttribute('highlightColor');
-    }
-
-
-    setInactive(pianoKey) {
-        if (pianoKey) {
-            pianoKey.style.backgroundColor = pianoKey.getAttribute('primaryColor');
+            this.setKeyInactive(e.target);
         }
     }
 }
