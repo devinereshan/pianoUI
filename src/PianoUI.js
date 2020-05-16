@@ -9,7 +9,8 @@ const defaultColors = {
     blackKey: 'black',
     whiteKeyHighlight: 'aqua',
     blackKeyHighlight: 'aqua',
-    border: 'gray',
+    blackKeyBorder: 'gray',
+    whiteKeyBorder: 'gray',
 }
 
 class UIEmiter extends EventEmitter {
@@ -34,7 +35,7 @@ export default class PianoUI {
         this.range = range.slice(); // [lowNote, highNote] - inclusive
         this.mouseState = MOUSEUP;
         this.colors = defaultColors;
-        this.setColors(colors);
+        this.initializeColors(colors);
 
         // ensure range starts and ends with a white key.
         this.correctRange();
@@ -52,10 +53,54 @@ export default class PianoUI {
         this.buildUI(target, size);
     }
 
-    setColors(colors) {
+    initializeColors(colors) {
         for (let k in colors) {
             if (this.colors[k]) {
                 this.colors[k] = colors[k];
+            }
+        }
+    }
+
+    setColors(colors) {
+        for (let k in colors) {
+            // only update value if it is a valid key and is different from current value
+            if (this.colors[k] && this.colors[k] !== colors[k]) {
+                this.colors[k] = colors[k];
+
+                switch(k) {
+                    case 'whiteKey':
+                        for (let wk of this.whiteKeyContainer.children) {
+                            wk.setAttribute('primaryColor', this.colors[k]);
+                            wk.style.backgroundColor = this.colors[k];
+                        }
+                        break;
+                    case 'blackKey':
+                        for (let bk of this.blackKeyContainer.children) {
+                            bk.setAttribute('primaryColor', this.colors[k]);
+                            bk.style.backgroundColor = this.colors[k];
+                        }
+                        break;
+                    case 'whiteKeyHighlight':
+                        for (let wk of this.whiteKeyContainer.children) {
+                            wk.setAttribute('highlightColor', this.colors[k]);
+                        }
+                        break;
+                    case 'blackKeyHighlight':
+                        for (let bk of this.blackKeyContainer.children) {
+                            bk.setAttribute('highlightColor', this.colors[k]);
+                        }
+                        break;
+                    case 'blackKeyBorder':
+                        for (let bk of this.blackKeyContainer.children) {
+                            bk.style.border = this.colors[k];
+                        }
+                        break;
+                    case 'whiteKeyBorder':
+                        for (let wk of this.whiteKeyContainer.children) {
+                            wk.style.border = this.colors[k];
+                        }
+                        break;
+                }
             }
         }
     }
@@ -104,12 +149,12 @@ export default class PianoUI {
 
 
     buildUI() {
-        let keyContainer = this.createKeyContainer(styles.keyContainer);
-        keyContainer.style.width = `${this.size[0]}px`;
-        keyContainer.style.height = `${this.size[1]}px`;
+        this.keyContainer = this.createKeyContainer(styles.keyContainer);
+        this.keyContainer.style.width = `${this.size[0]}px`;
+        this.keyContainer.style.height = `${this.size[1]}px`;
 
-        let blackKeyContainer = this.createKeyContainer(styles.blackKeyContainer);
-        let whiteKeyContainer = this.createKeyContainer(styles.whiteKeyContainer);
+        this.blackKeyContainer = this.createKeyContainer(styles.blackKeyContainer);
+        this.whiteKeyContainer = this.createKeyContainer(styles.whiteKeyContainer);
 
         let keyPattern = ['w', 'b', 'w', 'b', 'w', 'w', 'b', 'w', 'b', 'w', 'b', 'w'];
 
@@ -120,42 +165,42 @@ export default class PianoUI {
                     i, styles.whiteKey,
                     this.colors.whiteKey,
                     this.colors.whiteKeyHighlight,
-                    this.colors.border
+                    this.colors.whiteKeyBorder
                 );
                 this.registerEventListeners(newKey);
-                whiteKeyContainer.appendChild(newKey);
+                this.whiteKeyContainer.appendChild(newKey);
             } else {
                 let newKey = this.createKey(
                     i,
                     styles.blackKey,
                     this.colors.blackKey,
                     this.colors.blackKeyHighlight,
-                    this.colors.border
+                    this.colors.blackKeyBorder
                 );
                 this.registerEventListeners(newKey);
-                blackKeyContainer.appendChild(newKey);
+                this.blackKeyContainer.appendChild(newKey);
             }
 
             if (i % 12 === 4 || i % 12 === 11) {
                 let ghostKey = document.createElement('template');
                 ghostKey.innerHTML = `<div class="${styles.ghostKey}"></div>`;
-                blackKeyContainer.appendChild(ghostKey.content.firstChild);
+                this.blackKeyContainer.appendChild(ghostKey.content.firstChild);
             }
         }
 
-        let blackKeyMargin = (this.size[0] / whiteKeyContainer.children.length) / 8;
+        let blackKeyMargin = (this.size[0] / this.whiteKeyContainer.children.length) / 8;
 
-        for (let bk of blackKeyContainer.children) {
+        for (let bk of this.blackKeyContainer.children) {
             bk.style.marginLeft = `${blackKeyMargin}px`
             bk.style.marginRight = `${blackKeyMargin}px`
         };
 
-        blackKeyContainer.style.paddingLeft = `${blackKeyMargin * 4}px`;
-        blackKeyContainer.style.paddingRight = `${blackKeyMargin * 4}px`;
+        this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin * 4}px`;
+        this.blackKeyContainer.style.paddingRight = `${blackKeyMargin * 4}px`;
 
-        keyContainer.appendChild(blackKeyContainer);
-        keyContainer.appendChild(whiteKeyContainer);
-        this.pianoContainer.appendChild(keyContainer);
+        this.keyContainer.appendChild(this.blackKeyContainer);
+        this.keyContainer.appendChild(this.whiteKeyContainer);
+        this.pianoContainer.appendChild(this.keyContainer);
     }
 
     registerEventListeners(key) {

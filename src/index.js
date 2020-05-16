@@ -8,7 +8,7 @@ let piano2 = new Piano('piano-two-container', [500, 125], [36, 48], {
     blackKey: 'aqua',
     whiteKeyHighlight: 'deeppink',
     blackKeyHighlight: 'deeppink',
-    border: 'gray'
 });
 
 
+piano2.setColors({whiteKey: 'blue'});

@@ -23,4 +23,8 @@ export default class Piano {
             this.synth.triggerRelease();
         });
     }
+
+    setColors(colors) {
+        this.pianoUI.setColors(colors);
+    }
 }
