@@ -4,6 +4,14 @@ const EventEmitter = require('events');
 const MOUSEUP = 0;
 const MOUSEDOWN = 1;
 
+const defaultColors = {
+    whiteKey: 'white',
+    blackKey: 'black',
+    whiteKeyHighlight: 'aqua',
+    blackKeyHighlight: 'aqua',
+    border: 'gray',
+}
+
 class UIEmiter extends EventEmitter {
     constructor() {
         super();
@@ -19,12 +27,14 @@ class UIEmiter extends EventEmitter {
 }
 
 export default class PianoUI {
-    constructor(target, size, range) {
+    constructor(target, size, range, colors) {
         this.emitter = new UIEmiter();
         this.target = target;
         this.size = size.slice();
         this.range = range.slice(); // [lowNote, highNote] - inclusive
         this.mouseState = MOUSEUP;
+        this.colors = defaultColors;
+        this.setColors(colors);
 
         // ensure range starts and ends with a white key.
         this.correctRange();
@@ -40,6 +50,14 @@ export default class PianoUI {
         this.pianoContainer = document.getElementById(this.target);
 
         this.buildUI(target, size);
+    }
+
+    setColors(colors) {
+        for (let k in colors) {
+            if (this.colors[k]) {
+                this.colors[k] = colors[k];
+            }
+        }
     }
 
     correctRange() {
@@ -65,7 +83,7 @@ export default class PianoUI {
     }
 
 
-    createKey(id, className, keyColor, highlightColor) {
+    createKey(id, className, keyColor, highlightColor, borderColor) {
         let template = document.createElement('template');
         template.innerHTML = `
             <div
@@ -73,7 +91,10 @@ export default class PianoUI {
                 class="${className}"
                 primaryColor="${keyColor}"
                 highlightColor="${highlightColor}"
-                style="background-color: ${keyColor}"
+                style="
+                    background-color: ${keyColor};
+                    border: 1px solid ${borderColor}
+                "
             >
             </div>
         `.replace(/\s+/g, ' ').trim();
@@ -95,11 +116,22 @@ export default class PianoUI {
         for (let i = this.range[0]; i < this.range[1] + 1; i++) {
 
             if (keyPattern[i % 12] === 'w') {
-                let newKey = this.createKey(i, styles.whiteKey, 'white', 'aqua');
+                let newKey = this.createKey(
+                    i, styles.whiteKey,
+                    this.colors.whiteKey,
+                    this.colors.whiteKeyHighlight,
+                    this.colors.border
+                );
                 this.registerEventListeners(newKey);
                 whiteKeyContainer.appendChild(newKey);
             } else {
-                let newKey = this.createKey(i, styles.blackKey, 'black', 'aqua');
+                let newKey = this.createKey(
+                    i,
+                    styles.blackKey,
+                    this.colors.blackKey,
+                    this.colors.blackKeyHighlight,
+                    this.colors.border
+                );
                 this.registerEventListeners(newKey);
                 blackKeyContainer.appendChild(newKey);
             }
