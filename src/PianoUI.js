@@ -125,6 +125,42 @@ export default class PianoUI {
     }
 
 
+    setSize(size) {
+        this.size = size.slice();
+        this.keyContainer.style.width = `${this.size[0]}`;
+        this.keyContainer.style.height = `${this.size[1]}`;
+        this._resizeBlackKeys();
+    }
+
+    setRange(range) {
+        this.range = range.slice();
+        this._removeAllKeys();
+        this._createKeys();
+    }
+
+
+    // Calling setSize and setRange separately would resizeBlackKeys twice.
+    // This method exists to avoid that unecessary double invocation.
+    setSizeAndRange(size, range) {
+        this.size = size.slice();
+        this.range = range.slice();
+        this._removeAllKeys();
+        this.keyContainer.style.width = `${this.size[0]}`;
+        this.keyContainer.style.height = `${this.size[1]}`;
+        this._createKeys();
+    }
+
+
+    _removeAllKeys() {
+        while (this.whiteKeyContainer.firstChild) {
+            this.whiteKeyContainer.lastChild.remove();
+        }
+        while (this.blackKeyContainer.firstChild) {
+            this.blackKeyContainer.lastChild.remove();
+        }
+    }
+
+
     _registerMediaQueries() {
         for (let query in this.mediaQueries) {
             matchMedia(query).addListener(
@@ -184,7 +220,7 @@ export default class PianoUI {
     }
 
 
-    _buildUI() {
+    _createContainers() {
         this.keyContainer = this._createKeyContainer(styles.keyContainer);
         this.keyContainer.style.width = `${this.size[0]}`;
         this.keyContainer.style.height = `${this.size[1]}`;
@@ -192,6 +228,19 @@ export default class PianoUI {
         this.blackKeyContainer = this._createKeyContainer(styles.blackKeyContainer);
         this.whiteKeyContainer = this._createKeyContainer(styles.whiteKeyContainer);
 
+        this.keyContainer.appendChild(this.blackKeyContainer);
+        this.keyContainer.appendChild(this.whiteKeyContainer);
+        this.pianoContainer.appendChild(this.keyContainer);
+    }
+
+
+    _buildUI() {
+        this._createContainers();
+        this._createKeys();
+    }
+
+
+    _createKeys() {
         let keyPattern = ['w', 'b', 'w', 'b', 'w', 'w', 'b', 'w', 'b', 'w', 'b', 'w'];
 
         for (let i = this.range[0]; i < this.range[1] + 1; i++) {
@@ -225,10 +274,6 @@ export default class PianoUI {
         }
 
         this._resizeBlackKeys();
-
-        this.keyContainer.appendChild(this.blackKeyContainer);
-        this.keyContainer.appendChild(this.whiteKeyContainer);
-        this.pianoContainer.appendChild(this.keyContainer);
     }
 
 

@@ -25,5 +25,8 @@ let piano4 = new Piano('piano-four-container', ['500px', '125px'], [36, 48], {},
     },
 });
 
+piano4.pianoUI.setSize(['800px', '200px']);
+piano4.pianoUI.setRange([24, 48]);
+piano4.pianoUI.setSizeAndRange(['50vw', '20vh'], [36, 48]);
 
 piano2.setColors({whiteKey: 'blue'});
