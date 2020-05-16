@@ -22,23 +22,12 @@ export default class PianoUI {
     constructor(target, size, range) {
         this.emitter = new UIEmiter();
         this.target = target;
-        this.size = size;
+        this.size = size.slice();
+        this.range = range.slice(); // [lowNote, highNote] - inclusive
         this.mouseState = MOUSEUP;
 
-        // [lowNote, highNote] - inclusive
         // ensure range starts and ends with a white key.
-        let whiteKeyIndexes = [0, 2, 4, 5, 7, 9, 11];
-        if (!whiteKeyIndexes.includes(range[0] % 12)) {
-            console.log(`${range[0]} not white key`)
-            range[0] = Math.max( range[0] - 1, 0);
-        }
-
-        if (!whiteKeyIndexes.includes(range[1] % 12)) {
-            console.log(`${range[1]} not white key`)
-            range[1] = Math.max( range[1] - 1, 0);
-        }
-
-        this.range = range;
+        this.correctRange();
 
         window.addEventListener('mousedown', () => {
             this.mouseState = MOUSEDOWN;
@@ -48,82 +37,93 @@ export default class PianoUI {
             this.mouseState = MOUSEUP;
         });
 
+        this.pianoContainer = document.getElementById(this.target);
+
         this.buildUI(target, size);
     }
 
+    correctRange() {
+        let whiteKeyIndexes = [0, 2, 4, 5, 7, 9, 11];
+        if (!whiteKeyIndexes.includes(this.range[0] % 12)) {
+            this.range[0] = Math.max( this.range[0] - 1, 0);
+        }
+
+        if (!whiteKeyIndexes.includes(this.range[1] % 12)) {
+            this.range[1] = Math.max( this.range[1] - 1, 0);
+        }
+    }
 
     on(eventName, callback) {
         return this.emitter.on(eventName, callback);
     }
 
 
+    createKeyContainer(className) {
+        let template = document.createElement('template');
+        template.innerHTML = `<div class="${className}"></div>`;
+        return template.content.firstChild;
+    }
+
+
+    createKey(id, className, keyColor, highlightColor) {
+        let template = document.createElement('template');
+        template.innerHTML = `
+            <div
+                id="${id}"
+                class="${className}"
+                primaryColor="${keyColor}"
+                highlightColor="${highlightColor}"
+                style="background-color: ${keyColor}"
+            >
+            </div>
+        `.replace(/\s+/g, ' ').trim();
+
+        return template.content.firstChild;
+    }
+
+
     buildUI() {
-        this.pianoContainer = document.getElementById(this.target);
-        let keyContainer = document.createElement('template');
-        keyContainer.innerHTML = `<div class="${styles.keyContainer}"></div>`
+        let keyContainer = this.createKeyContainer(styles.keyContainer);
+        keyContainer.style.width = `${this.size[0]}px`;
+        keyContainer.style.height = `${this.size[1]}px`;
 
-        let blackKeyContainer = document.createElement('template');
-        blackKeyContainer.innerHTML = `<div class="${styles.blackKeys}"></div>`
-
-        let whiteKeyContainer = document.createElement('template');
-        whiteKeyContainer.innerHTML = `<div class="${styles.whiteKeys}"></div>`
-
-        keyContainer.content.firstChild.style.width = `${this.size[0]}px`;
-        keyContainer.content.firstChild.style.height = `${this.size[1]}px`;
-
-
-        let whiteKeyTemplate = `<div class="${styles.whiteKey}" primaryColor="white" style="background-color: white"></div>`;
-
-        let blackKeyTemplate = `<div class="${styles.blackKey}" primaryColor="black" style="background-color: black"></div>`;
-
-        let ghostKeyTemplate = `<div class="${styles.ghostKey}"></div>`;
+        let blackKeyContainer = this.createKeyContainer(styles.blackKeyContainer);
+        let whiteKeyContainer = this.createKeyContainer(styles.whiteKeyContainer);
 
         let keyPattern = ['w', 'b', 'w', 'b', 'w', 'w', 'b', 'w', 'b', 'w', 'b', 'w'];
 
         for (let i = this.range[0]; i < this.range[1] + 1; i++) {
 
             if (keyPattern[i % 12] === 'w') {
-                let newKey = document.createElement('template');
-
-                newKey.innerHTML = whiteKeyTemplate.trim();
-                newKey.content.firstChild.setAttribute('id', `${i}`)
-                this.registerEventListeners(newKey.content.firstChild);
-
-                whiteKeyContainer.content.firstChild.appendChild(newKey.content.firstChild);
+                let newKey = this.createKey(i, styles.whiteKey, 'white', 'aqua');
+                this.registerEventListeners(newKey);
+                whiteKeyContainer.appendChild(newKey);
             } else {
-                let newKey = document.createElement('template');
-                newKey.innerHTML = blackKeyTemplate.trim();
-                newKey.content.firstChild.setAttribute('id', `${i}`)
-
-                this.registerEventListeners(newKey.content.firstChild);
-
-                blackKeyContainer.content.firstChild.appendChild(newKey.content.firstChild);
+                let newKey = this.createKey(i, styles.blackKey, 'black', 'aqua');
+                this.registerEventListeners(newKey);
+                blackKeyContainer.appendChild(newKey);
             }
 
             if (i % 12 === 4 || i % 12 === 11) {
                 let ghostKey = document.createElement('template');
-                ghostKey.innerHTML = ghostKeyTemplate.trim();
-                blackKeyContainer.content.firstChild.appendChild(ghostKey.content.firstChild);
+                ghostKey.innerHTML = `<div class="${styles.ghostKey}"></div>`;
+                blackKeyContainer.appendChild(ghostKey.content.firstChild);
             }
         }
 
+        let blackKeyMargin = (this.size[0] / whiteKeyContainer.children.length) / 8;
 
-        let blackKeyMargin = (this.size[0] / whiteKeyContainer.content.firstChild.children.length) / 8;
-
-
-        for (let bk of blackKeyContainer.content.firstChild.children) {
+        for (let bk of blackKeyContainer.children) {
             bk.style.marginLeft = `${blackKeyMargin}px`
             bk.style.marginRight = `${blackKeyMargin}px`
         };
 
-        blackKeyContainer.content.firstChild.style.paddingLeft = `${blackKeyMargin * 4}px`;
-        blackKeyContainer.content.firstChild.style.paddingRight = `${blackKeyMargin * 4}px`;
+        blackKeyContainer.style.paddingLeft = `${blackKeyMargin * 4}px`;
+        blackKeyContainer.style.paddingRight = `${blackKeyMargin * 4}px`;
 
-
-        keyContainer.content.firstChild.appendChild(blackKeyContainer.content.firstChild);
-        keyContainer.content.firstChild.appendChild(whiteKeyContainer.content.firstChild);
-        this.pianoContainer.appendChild(keyContainer.content.firstChild);
-
+        keyContainer.appendChild(blackKeyContainer);
+        keyContainer.appendChild(whiteKeyContainer);
+        this.pianoContainer.appendChild(keyContainer);
     }
 
     registerEventListeners(key) {
@@ -155,10 +155,12 @@ export default class PianoUI {
         this.emitter.noteOn(e);
     }
 
+
     mouseUpKey(e) {
         this.setInactive(e.target);
         this.emitter.noteOff(e);
     }
+
 
     mouseOverKey(e) {
         if (this.mouseState === MOUSEDOWN) {
@@ -167,6 +169,7 @@ export default class PianoUI {
         }
     }
 
+
     mouseOutKey(e) {
         if (this.mouseState === MOUSEDOWN) {
             this.setInactive(e.target);
@@ -174,11 +177,13 @@ export default class PianoUI {
         }
     }
 
+
     setActive(pianoKey) {
         this.setInactive(this.activePianoKey)
         this.activePianoKey = pianoKey;
-        this.activePianoKey.style.backgroundColor = 'aqua';
+        this.activePianoKey.style.backgroundColor = this.activePianoKey.getAttribute('highlightColor');
     }
+
 
     setInactive(pianoKey) {
         if (pianoKey) {
