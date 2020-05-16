@@ -15,5 +15,15 @@ let piano2 = new Piano('piano-two-container', ['500px', '125px'], [36, 48], {
     blackKeyHighlight: 'deeppink',
 });
 
+let piano4 = new Piano('piano-four-container', ['500px', '125px'], [36, 48], {}, {
+    '(max-width: 600px)' : function(e) {
+        if (e.matches) {
+            this.setColors({whiteKey: 'blue'});
+        } else {
+            this.setColors({whiteKey: 'white'});
+        }
+    },
+});
+
 
 piano2.setColors({whiteKey: 'blue'});

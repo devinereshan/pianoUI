@@ -28,14 +28,16 @@ class UIEmiter extends EventEmitter {
 }
 
 export default class PianoUI {
-    constructor(target, size, range, colors) {
+    constructor(target, size, range, colors, mediaQueries) {
         this.emitter = new UIEmiter();
         this.target = target;
         this.size = size.slice();
         this.range = range.slice(); // [lowNote, highNote] - inclusive
         this.mouseState = MOUSEUP;
-        this.colors = defaultColors;
+        this.colors = {};
         this.initializeColors(colors);
+        this.mediaQueries = mediaQueries;
+        this.registerMediaQueries();
 
         // ensure range starts and ends with a white key.
         this.correctRange();
@@ -53,10 +55,21 @@ export default class PianoUI {
         this.buildUI(target, size);
     }
 
+    registerMediaQueries() {
+        for (let query in this.mediaQueries) {
+            console.log('media query');
+            matchMedia(query).addListener(
+                this.mediaQueries[query].bind(this)
+            );
+        }
+    }
+
     initializeColors(colors) {
-        for (let k in colors) {
-            if (this.colors[k]) {
+        for (let k in defaultColors) {
+            if (colors && colors[k]) {
                 this.colors[k] = colors[k];
+            } else {
+                this.colors[k] = defaultColors[k];
             }
         }
     }
@@ -197,8 +210,6 @@ export default class PianoUI {
         } else {
             blackKeyMargin = (Number(width[0]) / this.whiteKeyContainer.children.length) / (8 * (Number(width[0]) / 100));
         }
-
-        console.log(blackKeyMargin);
 
         for (let bk of this.blackKeyContainer.children) {
             bk.style.marginLeft = `${blackKeyMargin}${width[1]}`;
