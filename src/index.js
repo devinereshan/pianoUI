@@ -1,9 +1,14 @@
 import Piano from './Piano';
-import styles from './PianoUI.module.css';
 
-let piano = new Piano('piano-container', [960, 240], [36, 60]);
+let piano1 = new Piano('piano-container', ['90vw', '20vh'], [36, 60]);
 
-let piano2 = new Piano('piano-two-container', [500, 125], [36, 48], {
+// Percentage values are calculated based on dimensions of containing element.
+// In this case, the div with id="piano-container" is the reference for calculating
+// percentages. Thus, those dimensions must be set explicitly somewhere so that the
+// percentage values can be calculated correctly.
+let piano3 = new Piano('piano-percentage-container', ['70%', '50%'], [36, 48]);
+
+let piano2 = new Piano('piano-two-container', ['500px', '125px'], [36, 48], {
     whiteKey: '#333',
     blackKey: 'aqua',
     whiteKeyHighlight: 'deeppink',

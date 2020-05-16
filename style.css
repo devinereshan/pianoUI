@@ -13,6 +13,19 @@
     flex-direction: column;
 }
 
+#piano-container {
+    margin: 20px;
+}
+
+#piano-percentage-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid green;
+}
+
 #piano-two-container {
-    margin-top: 20px;
+    margin: 20px;
 }

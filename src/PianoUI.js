@@ -150,8 +150,8 @@ export default class PianoUI {
 
     buildUI() {
         this.keyContainer = this.createKeyContainer(styles.keyContainer);
-        this.keyContainer.style.width = `${this.size[0]}px`;
-        this.keyContainer.style.height = `${this.size[1]}px`;
+        this.keyContainer.style.width = `${this.size[0]}`;
+        this.keyContainer.style.height = `${this.size[1]}`;
 
         this.blackKeyContainer = this.createKeyContainer(styles.blackKeyContainer);
         this.whiteKeyContainer = this.createKeyContainer(styles.whiteKeyContainer);
@@ -188,15 +188,25 @@ export default class PianoUI {
             }
         }
 
-        let blackKeyMargin = (this.size[0] / this.whiteKeyContainer.children.length) / 8;
+        let width = this.size[0].split(/([0-9]+)/).slice(1);
+        let blackKeyMargin;
+
+        // percentage values are relative to parent container, so must be calculated separately
+        if (width[1] !== '%') {
+            blackKeyMargin = (Number(width[0]) / this.whiteKeyContainer.children.length) / 8;
+        } else {
+            blackKeyMargin = (Number(width[0]) / this.whiteKeyContainer.children.length) / (8 * (Number(width[0]) / 100));
+        }
+
+        console.log(blackKeyMargin);
 
         for (let bk of this.blackKeyContainer.children) {
-            bk.style.marginLeft = `${blackKeyMargin}px`
-            bk.style.marginRight = `${blackKeyMargin}px`
+            bk.style.marginLeft = `${blackKeyMargin}${width[1]}`;
+            bk.style.marginRight = `${blackKeyMargin}${width[1]}`;
         };
 
-        this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin * 4}px`;
-        this.blackKeyContainer.style.paddingRight = `${blackKeyMargin * 4}px`;
+        this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin * 4}${width[1]}`;
+        this.blackKeyContainer.style.paddingRight = `${blackKeyMargin * 4}${width[1]}`;
 
         this.keyContainer.appendChild(this.blackKeyContainer);
         this.keyContainer.appendChild(this.whiteKeyContainer);
