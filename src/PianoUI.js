@@ -1,5 +1,5 @@
+import styles from './PianoUI.module.css';
 const EventEmitter = require('events');
-
 
 const MOUSEUP = 0;
 const MOUSEDOWN = 1;
@@ -20,12 +20,10 @@ class UIEmiter extends EventEmitter {
 
 export default class PianoUI {
     constructor(target, size, range) {
-        // super();
         this.emitter = new UIEmiter();
-
         this.target = target;
-
         this.size = size;
+        this.mouseState = MOUSEUP;
 
         // [lowNote, highNote] - inclusive
         // ensure range starts and ends with a white key.
@@ -42,8 +40,6 @@ export default class PianoUI {
 
         this.range = range;
 
-        this.mouseState = MOUSEUP;
-
         window.addEventListener('mousedown', () => {
             this.mouseState = MOUSEDOWN;
         });
@@ -55,151 +51,118 @@ export default class PianoUI {
         this.buildUI(target, size);
     }
 
+
     on(eventName, callback) {
         return this.emitter.on(eventName, callback);
     }
 
+
     buildUI() {
         this.pianoContainer = document.getElementById(this.target);
+        let keyContainer = document.createElement('template');
+        keyContainer.innerHTML = `<div class="${styles.keyContainer}"></div>`
 
-        this.keyContainer = document.createElement('div');
-        this.whiteKeyContainer = document.createElement('div');
-        this.whiteKeyContainer.setAttribute('id', 'white-keys');
+        let blackKeyContainer = document.createElement('template');
+        blackKeyContainer.innerHTML = `<div class="${styles.blackKeys}"></div>`
 
-        this.blackKeyContainer = document.createElement('div');
-        this.blackKeyContainer.setAttribute('id', 'black-keys');
+        let whiteKeyContainer = document.createElement('template');
+        whiteKeyContainer.innerHTML = `<div class="${styles.whiteKeys}"></div>`
+
+        keyContainer.content.firstChild.style.width = `${this.size[0]}px`;
+        keyContainer.content.firstChild.style.height = `${this.size[1]}px`;
 
 
+        let whiteKeyTemplate = `<div class="${styles.whiteKey}" primaryColor="white" style="background-color: white"></div>`;
 
+        let blackKeyTemplate = `<div class="${styles.blackKey}" primaryColor="black" style="background-color: black"></div>`;
 
-        // this.keyContainer = document.createElement('div');
-        this.keyContainer.style.width = `${this.size[0]}px`;
-        this.keyContainer.style.height = `${this.size[1]}px`;
-        this.keyContainer.style.position = 'relative';
-        this.keyContainer.style.border = '1px solid green';
-
-        // this.whiteKeyContainer = document.createElement('div');
-        // this.whiteKeyContainer.setAttribute('id', 'white-keys');
-        this.whiteKeyContainer.style.width = `100%`;
-        this.whiteKeyContainer.style.height = `100%`;
-
-        // this.blackKeyContainer = document.createElement('div');
-        // this.blackKeyContainer.setAttribute('id', 'black-keys');
-        this.blackKeyContainer.style.position = 'absolute';
-        this.blackKeyContainer.style.pointerEvents = 'none';
-        this.blackKeyContainer.style.width = `100%`;
-        this.blackKeyContainer.style.height = `55%`;
+        let ghostKeyTemplate = `<div class="${styles.ghostKey}"></div>`;
 
         let keyPattern = ['w', 'b', 'w', 'b', 'w', 'w', 'b', 'w', 'b', 'w', 'b', 'w'];
 
         for (let i = this.range[0]; i < this.range[1] + 1; i++) {
-            let newKey = document.createElement('div');
-            newKey.setAttribute('class', 'key');
-            newKey.setAttribute('id', `${i}`);
-
-            newKey.addEventListener('mouseover', (e) => {
-                e.preventDefault();
-                this.mouseOverKey(e);
-            });
-            newKey.addEventListener('mouseout', (e) => {
-                e.preventDefault();
-                this.mouseOutKey(e);
-            });
-            newKey.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                this.mouseDownKey(e);
-            });
-            newKey.addEventListener('mouseup', (e) => {
-                e.preventDefault();
-                this.mouseUpKey(e);
-            });
-
-            newKey.addEventListener('dragstart', (e) => {
-                e.preventDefault();
-            });
 
             if (keyPattern[i % 12] === 'w') {
-                newKey.setAttribute('primaryColor', 'white');
-                newKey.style.backgroundColor = 'white';
-                this.whiteKeyContainer.appendChild(newKey);
+                let newKey = document.createElement('template');
+
+                newKey.innerHTML = whiteKeyTemplate.trim();
+                newKey.content.firstChild.setAttribute('id', `${i}`)
+                this.registerEventListeners(newKey.content.firstChild);
+
+                whiteKeyContainer.content.firstChild.appendChild(newKey.content.firstChild);
             } else {
-                newKey.setAttribute('primaryColor', 'black');
-                newKey.style.backgroundColor = 'black';
-                newKey.style.pointerEvents = 'all';
-                this.blackKeyContainer.appendChild(newKey);
+                let newKey = document.createElement('template');
+                newKey.innerHTML = blackKeyTemplate.trim();
+                newKey.content.firstChild.setAttribute('id', `${i}`)
+
+                this.registerEventListeners(newKey.content.firstChild);
+
+                blackKeyContainer.content.firstChild.appendChild(newKey.content.firstChild);
             }
 
             if (i % 12 === 4 || i % 12 === 11) {
-                let ghostKey = document.createElement('div');
-                ghostKey.setAttribute('class', 'key ghost-key');
-                ghostKey.style.opacity = 0;
-                ghostKey.style.pointerEvents = 'none';
-                this.blackKeyContainer.appendChild(ghostKey);
+                let ghostKey = document.createElement('template');
+                ghostKey.innerHTML = ghostKeyTemplate.trim();
+                blackKeyContainer.content.firstChild.appendChild(ghostKey.content.firstChild);
             }
         }
 
-        let blackKeyMargin = (this.size[0] / this.whiteKeyContainer.children.length) / 8;
 
-        for (let bk of this.blackKeyContainer.children) {
+        let blackKeyMargin = (this.size[0] / whiteKeyContainer.content.firstChild.children.length) / 8;
+
+
+        for (let bk of blackKeyContainer.content.firstChild.children) {
             bk.style.marginLeft = `${blackKeyMargin}px`
             bk.style.marginRight = `${blackKeyMargin}px`
         };
 
-        this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin * 4}px`;
-        this.blackKeyContainer.style.paddingRight = `${blackKeyMargin * 4}px`;
+        blackKeyContainer.content.firstChild.style.paddingLeft = `${blackKeyMargin * 4}px`;
+        blackKeyContainer.content.firstChild.style.paddingRight = `${blackKeyMargin * 4}px`;
 
-        // let template = `
-        //     <style>
-        //         #key-container {
-        //             width: '${this.size[0]}px';
-        //             height: '${this.size[1]}px';
-        //             position: relative;
-        //         }
 
-        //         #white-keys {
-        //             display: flex;
-        //             width: 100%;
-        //             height: 100%;
-        //         }
+        keyContainer.content.firstChild.appendChild(blackKeyContainer.content.firstChild);
+        keyContainer.content.firstChild.appendChild(whiteKeyContainer.content.firstChild);
+        this.pianoContainer.appendChild(keyContainer.content.firstChild);
 
-        //         #black-keys {
-        //             position: absolute;
-        //             pointer-events: none;
-        //             display: flex;
-        //             justify-content: space-between;
-        //             width: 100%;
-        //             height: 55%;
-        //         }
-        //     </style>
-        //     <div id="key-container">
-        //         ${this.blackKeyContainer.innerHTML}
-        //         ${this.whiteKeyContainer.innerHTML}
-        //     </div>
-        // `
+    }
 
-        this.keyContainer.appendChild(this.blackKeyContainer);
-        this.keyContainer.appendChild(this.whiteKeyContainer);
-        this.pianoContainer.appendChild(this.keyContainer);
-        // this.pianoContainer.innerHTML = template;
+    registerEventListeners(key) {
+        key.addEventListener('mouseover', (e) => {
+            e.preventDefault();
+            this.mouseOverKey(e);
+        });
+        key.addEventListener('mouseout', (e) => {
+            e.preventDefault();
+            this.mouseOutKey(e);
+        });
+        key.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            this.mouseDownKey(e);
+        });
+        key.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            this.mouseUpKey(e);
+        });
+
+        key.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+        });
     }
 
 
     mouseDownKey(e) {
         this.setActive(e.target);
-        // this.emit('noteOn', { note: e.target.id });
         this.emitter.noteOn(e);
     }
 
     mouseUpKey(e) {
         this.setInactive(e.target);
-        // this.emit('noteOff', { note: e.target.id });
         this.emitter.noteOff(e);
     }
 
     mouseOverKey(e) {
         if (this.mouseState === MOUSEDOWN) {
             this.setActive(e.target);
-            // this.emit('noteOn', { note: e.target.id });
             this.emitter.noteOn(e);
         }
     }
@@ -207,7 +170,6 @@ export default class PianoUI {
     mouseOutKey(e) {
         if (this.mouseState === MOUSEDOWN) {
             this.setInactive(e.target);
-            // this.emit('noteOff', { note: e.target.id });
             this.emitter.noteOff(e);
         }
     }
