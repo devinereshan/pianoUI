@@ -11,28 +11,3 @@
     justify-content: center;
     align-items: center;
 }
-
-/* #key-container {
-    position: relative;
-}
-
-#white-keys {
-    display: flex;
-    width: 100%;
-    height: 100%;
-}
-
-#black-keys {
-    position: absolute;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
-    width: 100%;
-    height: 55%;
-}
-*/
-/* .key {
-    border: 1px solid pink;
-    flex: 1;
-    height: 100%;
-} */
