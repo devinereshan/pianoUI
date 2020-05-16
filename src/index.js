@@ -16,17 +16,33 @@ let piano2 = new Piano('piano-two-container', ['500px', '125px'], [36, 48], {
 });
 
 let piano4 = new Piano('piano-four-container', ['500px', '125px'], [36, 48], {}, {
-    '(max-width: 600px)' : function(e) {
+    '(min-width: 800px)' : function(e) {
         if (e.matches) {
-            this.setColors({whiteKey: 'blue'});
+            this.setSizeAndRange(['800px', '200px'], [36, 60]);
+            this.setColors({whiteKey: 'white'})
         } else {
-            this.setColors({whiteKey: 'white'});
+            this.setSizeAndRange(['500px', '125px'], [36, 48]);
+            this.setColors({whiteKey: 'blue'});
+        }
+    },
+    '(min-width: 1000px)' : function(e) {
+        if (e.matches) {
+            this.setSizeAndRange(['1000px', '250px'], [36, 60]);
+            this.setColors({whiteKey: 'yellow'})
+        } else {
+            this.setSizeAndRange(['800px', '200px'], [36, 60]);
+            this.setColors({whiteKey: 'white'})
         }
     },
 });
 
-piano4.pianoUI.setSize(['800px', '200px']);
-piano4.pianoUI.setRange([24, 48]);
-piano4.pianoUI.setSizeAndRange(['50vw', '20vh'], [36, 48]);
+// piano4.pianoUI.setSize(['800px', '200px']);
+// piano4.pianoUI.setRange([24, 48]);
+// piano4.pianoUI.setSizeAndRange(['50vw', '20vh'], [36, 48]);
 
-piano2.setColors({whiteKey: 'blue'});
+piano2.setColors({
+    blackKeyBorder: 'yellow',
+    whiteKey: '#00dd80',
+    blackKey: '#cc00cc88'
+
+});

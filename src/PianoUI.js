@@ -13,6 +13,19 @@ const defaultColors = {
     whiteKeyBorder: 'gray',
 }
 
+const uiDefaults = {
+    size:  ['800px', '200px'],
+    range: [36, 60],
+    colors: {
+        whiteKey: 'white',
+        blackKey: 'black',
+        whiteKeyHighlight: 'aqua',
+        blackKeyHighlight: 'aqua',
+        blackKeyBorder: 'gray',
+        whiteKeyBorder: 'gray',
+    },
+}
+
 
 class UIEmiter extends EventEmitter {
     constructor() {
@@ -40,7 +53,6 @@ export default class PianoUI {
         this.mediaQueries = mediaQueries;
 
         this._initializeColors(colors);
-        this._registerMediaQueries();
 
         // ensure range starts and ends with a white key.
         this._correctRange();
@@ -56,6 +68,9 @@ export default class PianoUI {
         this.pianoContainer = document.getElementById(this.target);
 
         this._buildUI(target, size);
+
+        // media queries may reference ui, so register them last
+        this._registerMediaQueries();
     }
 
 
@@ -95,12 +110,12 @@ export default class PianoUI {
                         break;
                     case 'blackKeyBorder':
                         for (let bk of this.blackKeyContainer.children) {
-                            bk.style.border = this.colors[k];
+                            bk.style.borderColor = this.colors[k];
                         }
                         break;
                     case 'whiteKeyBorder':
                         for (let wk of this.whiteKeyContainer.children) {
-                            wk.style.border = this.colors[k];
+                            wk.style.borderColor = this.colors[k];
                         }
                         break;
                 }
@@ -139,8 +154,8 @@ export default class PianoUI {
     }
 
 
-    // Calling setSize and setRange separately would resizeBlackKeys twice.
-    // This method exists to avoid that unecessary double invocation.
+    // Calling setSize and setRange separately would call resizeBlackKeys twice.
+    // This method exists to avoid that unnecessary double invocation.
     setSizeAndRange(size, range) {
         this.size = size.slice();
         this.range = range.slice();
@@ -163,8 +178,16 @@ export default class PianoUI {
 
     _registerMediaQueries() {
         for (let query in this.mediaQueries) {
-            matchMedia(query).addListener(
-                this.mediaQueries[query].bind(this)
+
+            this.mediaQueries[query] = this.mediaQueries[query].bind(this);
+            let q = matchMedia(query);
+
+            // test if already matches
+            this.mediaQueries[query](q);
+
+            // then add listener
+            q.addListener(
+                this.mediaQueries[query]
             );
         }
     }
