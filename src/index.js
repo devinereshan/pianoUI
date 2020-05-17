@@ -42,7 +42,7 @@ let piano4 = new Piano('piano-four-container', ['500px', '125px'], [36, 48], {},
 
 let togggleKeyButton = document.getElementById('toggle-key');
 togggleKeyButton.addEventListener('mousedown', () => {
-    piano4.pianoUI.setKeyActive(42);
+    piano4.pianoUI.setKeyActive(42, 20);
 });
 
 togggleKeyButton.addEventListener('mouseup', () => {

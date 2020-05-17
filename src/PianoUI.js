@@ -32,12 +32,20 @@ class UIEmiter extends EventEmitter {
         super();
     }
 
-    noteOn(key) {
-        this.emit('noteOn', { note: key.id });
+    noteOn(key, vel, eSource) {
+        this.emit('noteOn', {
+            note: key.id,
+            velocity: vel,
+            eventSource: eSource,
+        });
     }
 
-    noteOff(key) {
-        this.emit('noteOff', { note: key.id });
+    noteOff(key, eSource) {
+        this.emit('noteOff', {
+            note: key.id,
+            velocity: null,
+            eventSource: eSource,
+        });
     }
 }
 
@@ -129,21 +137,21 @@ export default class PianoUI {
     }
 
 
-    // TODO: add support for velocity
-    setKeyActive(number) {
+    // TODO: add support for velocity 0-127
+    setKeyActive(number, velocity = 127) {
         let key = this.keys[number - this.range[0]];
         if (key) {
-            this._setActive(key);
+            this._setActive(key, velocity, 'external');
         }
     }
+
 
     setKeyInactive(number) {
         let key = this.keys[number - this.range[0]];
         if (key) {
-            this._setInactive(key);
+            this._setInactive(key, 'external');
         }
     }
-
 
 
     setSize(size) {
@@ -152,6 +160,7 @@ export default class PianoUI {
         this.keyContainer.style.height = `${this.size[1]}`;
         this._resizeBlackKeys();
     }
+
 
     setRange(range) {
         this.range = range.slice();
@@ -355,41 +364,39 @@ export default class PianoUI {
 
 
     _mouseDownKey(e) {
-        this._setActive(e.target);
+        this._setActive(e.target, 127, 'mouseDown');
     }
 
 
     _mouseUpKey(e) {
-        this._setInactive(e.target);
+        this._setInactive(e.target, 'mouseUp');
     }
 
 
     _mouseOverKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this._setActive(e.target);
+            this._setActive(e.target, 127, 'mouseOver');
         }
     }
 
 
     _mouseOutKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this._setInactive(e.target);
+            this._setInactive(e.target, 'mouseOut');
         }
     }
 
 
-    _setActive(pianoKey) {
-        this._setInactive(this.activePianoKey)
-        this.activePianoKey = pianoKey;
-        this.activePianoKey.style.backgroundColor = this.activePianoKey.getAttribute('highlightColor');
-        this.emitter.noteOn(this.activePianoKey);
+    _setActive(pianoKey, velocity, eventSource) {
+        pianoKey.style.backgroundColor = pianoKey.getAttribute('highlightColor');
+        this.emitter.noteOn(pianoKey, velocity, eventSource);
     }
 
 
-    _setInactive(pianoKey) {
+    _setInactive(pianoKey, eventSource) {
         if (pianoKey) {
             pianoKey.style.backgroundColor = pianoKey.getAttribute('primaryColor');
-            this.emitter.noteOff(pianoKey);
+            this.emitter.noteOff(pianoKey, eventSource);
         }
     }
 }

@@ -13,13 +13,14 @@ export default class Piano {
 
     connectSynthtoUI() {
         this.pianoUI.on('noteOn', (e) => {
+            let velocity = e.velocity > 0 ? e.velocity/127 : 0;
             let note = notes[e.note % 12];
             let octave = Math.floor(e.note / 12);
             note += octave;
-            this.synth.triggerAttack(note);
+            this.synth.triggerAttack(note, undefined, velocity);
         });
 
-        this.pianoUI.on('noteOff', () => {
+        this.pianoUI.on('noteOff', (e) => {
             this.synth.triggerRelease();
         });
     }
