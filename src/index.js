@@ -40,6 +40,15 @@ let piano4 = new Piano('piano-four-container', ['500px', '125px'], [36, 48], {},
 // piano4.pianoUI.setRange([24, 48]);
 // piano4.pianoUI.setSizeAndRange(['50vw', '20vh'], [36, 48]);
 
+let togggleKeyButton = document.getElementById('toggle-key');
+togggleKeyButton.addEventListener('mousedown', () => {
+    piano4.pianoUI.setKeyActive(42);
+});
+
+togggleKeyButton.addEventListener('mouseup', () => {
+    piano4.pianoUI.setKeyInactive(42);
+});
+
 piano2.setColors({
     blackKeyBorder: 'yellow',
     whiteKey: '#00dd80',

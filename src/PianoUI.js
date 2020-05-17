@@ -67,6 +67,11 @@ export default class PianoUI {
 
         this.pianoContainer = document.getElementById(this.target);
 
+        // array for externally triggerring keys? performance increase from getting by id
+        // may be negligable: https://stackoverflow.com/questions/1716266/javascript-document-getelementbyid-slow-performance/1716873#1716873
+        // it is an old post...
+        this.keys = [];
+
         this._buildUI(target, size);
 
         // media queries may reference ui, so register them last
@@ -124,20 +129,21 @@ export default class PianoUI {
     }
 
 
-    setKeyActive(pianoKey) {
-        this.setKeyInactive(this.activePianoKey)
-        this.activePianoKey = pianoKey;
-        this.activePianoKey.style.backgroundColor = this.activePianoKey.getAttribute('highlightColor');
-        this.emitter.noteOn(this.activePianoKey);
-    }
-
-
-    setKeyInactive(pianoKey) {
-        if (pianoKey) {
-            pianoKey.style.backgroundColor = pianoKey.getAttribute('primaryColor');
-            this.emitter.noteOff(pianoKey);
+    // TODO: add support for velocity
+    setKeyActive(number) {
+        let key = this.keys[number - this.range[0]];
+        if (key) {
+            this._setActive(key);
         }
     }
+
+    setKeyInactive(number) {
+        let key = this.keys[number - this.range[0]];
+        if (key) {
+            this._setInactive(key);
+        }
+    }
+
 
 
     setSize(size) {
@@ -173,6 +179,7 @@ export default class PianoUI {
         while (this.blackKeyContainer.firstChild) {
             this.blackKeyContainer.lastChild.remove();
         }
+        this.keys = [];
     }
 
 
@@ -277,6 +284,7 @@ export default class PianoUI {
                 );
                 this._registerEventListeners(newKey);
                 this.whiteKeyContainer.appendChild(newKey);
+                this.keys.push(newKey);
             } else {
                 let newKey = this._createKey(
                     i,
@@ -287,6 +295,7 @@ export default class PianoUI {
                 );
                 this._registerEventListeners(newKey);
                 this.blackKeyContainer.appendChild(newKey);
+                this.keys.push(newKey);
             }
 
             if (i % 12 === 4 || i % 12 === 11) {
@@ -346,25 +355,41 @@ export default class PianoUI {
 
 
     _mouseDownKey(e) {
-        this.setKeyActive(e.target);
+        this._setActive(e.target);
     }
 
 
     _mouseUpKey(e) {
-        this.setKeyInactive(e.target);
+        this._setInactive(e.target);
     }
 
 
     _mouseOverKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this.setKeyActive(e.target);
+            this._setActive(e.target);
         }
     }
 
 
     _mouseOutKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this.setKeyInactive(e.target);
+            this._setInactive(e.target);
+        }
+    }
+
+
+    _setActive(pianoKey) {
+        this._setInactive(this.activePianoKey)
+        this.activePianoKey = pianoKey;
+        this.activePianoKey.style.backgroundColor = this.activePianoKey.getAttribute('highlightColor');
+        this.emitter.noteOn(this.activePianoKey);
+    }
+
+
+    _setInactive(pianoKey) {
+        if (pianoKey) {
+            pianoKey.style.backgroundColor = pianoKey.getAttribute('primaryColor');
+            this.emitter.noteOff(pianoKey);
         }
     }
 }
