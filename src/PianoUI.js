@@ -51,16 +51,15 @@ class UIEmiter extends EventEmitter {
 
 
 export default class PianoUI {
-    constructor(target, size, range, colors, mediaQueries) {
+    constructor(target, options, mediaQueries) {
         this.emitter = new UIEmiter();
         this.target = target;
-        this.size = size.slice();
-        this.range = range.slice(); // [lowNote, highNote] - inclusive
-        this.mouseState = MOUSEUP;
         this.colors = {};
-        this.mediaQueries = mediaQueries;
 
-        this._initializeColors(colors);
+        this._parseOptions(options);
+
+        this.mouseState = MOUSEUP;
+        this.mediaQueries = mediaQueries;
 
         // ensure range starts and ends with a white key.
         this._correctRange();
@@ -75,12 +74,9 @@ export default class PianoUI {
 
         this.pianoContainer = document.getElementById(this.target);
 
-        // array for externally triggerring keys? performance increase from getting by id
-        // may be negligable: https://stackoverflow.com/questions/1716266/javascript-document-getelementbyid-slow-performance/1716873#1716873
-        // it is an old post...
         this.keys = [];
 
-        this._buildUI(target, size);
+        this._buildUI(target, this.size);
 
         // media queries may reference ui, so register them last
         this._registerMediaQueries();
@@ -181,6 +177,17 @@ export default class PianoUI {
     }
 
 
+    _parseOptions(options) {
+        this.size = options.size ? options.size.slice() : uiDefaults.size.slice();
+        this.range = options.range ? options.range.slice() : uiDefaults.range.slice();
+        if (options.colors) {
+            this._initializeColors(options.colors);
+        } else {
+            this._initializeColors(uiDefaults.colors);
+        }
+    }
+
+
     _removeAllKeys() {
         while (this.whiteKeyContainer.firstChild) {
             this.whiteKeyContainer.lastChild.remove();
@@ -194,6 +201,7 @@ export default class PianoUI {
 
     _registerMediaQueries() {
         for (let query in this.mediaQueries) {
+            console.log(this.mediaQueries);
 
             this.mediaQueries[query] = this.mediaQueries[query].bind(this);
             let q = matchMedia(query);

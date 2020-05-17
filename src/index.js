@@ -1,21 +1,35 @@
 import Piano from './Piano';
 
-let piano1 = new Piano('piano-container', ['90vw', '20vh'], [36, 60]);
+let piano1 = new Piano('piano-container', {
+    size: ['90vw', '20vh'],
+    range: [36, 60],
+});
 
 // Percentage values are calculated based on dimensions of containing element.
 // In this case, the div with id="piano-container" is the reference for calculating
 // percentages. Thus, those dimensions must be set explicitly somewhere so that the
 // percentage values can be calculated correctly.
-let piano3 = new Piano('piano-percentage-container', ['70%', '50%'], [36, 48]);
-
-let piano2 = new Piano('piano-two-container', ['500px', '125px'], [36, 48], {
-    whiteKey: '#333',
-    blackKey: 'aqua',
-    whiteKeyHighlight: 'deeppink',
-    blackKeyHighlight: 'deeppink',
+let piano3 = new Piano('piano-percentage-container', {
+    size: ['70%', '50%'],
+    range: [36, 48],
 });
 
-let piano4 = new Piano('piano-four-container', ['500px', '125px'], [36, 48], {}, {
+let piano2 = new Piano('piano-two-container', {
+    size: ['500px', '125px'],
+    range: [36, 48],
+    colors: {
+        whiteKey: '#333',
+        blackKey: 'aqua',
+        whiteKeyHighlight: 'deeppink',
+        blackKeyHighlight: 'deeppink',
+    }
+});
+
+let piano4 = new Piano('piano-four-container', {
+        size: ['500px', '125px'],
+        range: [36, 48],
+    },
+    {
     '(min-width: 800px)' : function(e) {
         if (e.matches) {
             this.setSizeAndRange(['800px', '200px'], [36, 60]);
