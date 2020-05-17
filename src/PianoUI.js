@@ -24,6 +24,7 @@ const uiDefaults = {
         blackKeyBorder: 'gray',
         whiteKeyBorder: 'gray',
     },
+    borderWidth: '1px',
 }
 
 
@@ -185,6 +186,7 @@ export default class PianoUI {
         } else {
             this._initializeColors(uiDefaults.colors);
         }
+        this.borderWidth = options.borderWidth ? options.borderWidth : uiDefaults.borderWidth;
     }
 
 
@@ -201,7 +203,6 @@ export default class PianoUI {
 
     _registerMediaQueries() {
         for (let query in this.mediaQueries) {
-            console.log(this.mediaQueries);
 
             this.mediaQueries[query] = this.mediaQueries[query].bind(this);
             let q = matchMedia(query);
@@ -257,7 +258,7 @@ export default class PianoUI {
                 highlightColor="${highlightColor}"
                 style="
                     background-color: ${keyColor};
-                    border: 1px solid ${borderColor}
+                    border: ${this.borderWidth} solid ${borderColor}
                 "
             >
             </div>

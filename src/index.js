@@ -22,7 +22,8 @@ let piano2 = new Piano('piano-two-container', {
         blackKey: 'aqua',
         whiteKeyHighlight: 'deeppink',
         blackKeyHighlight: 'deeppink',
-    }
+    },
+    borderWidth: '3px'
 });
 
 let piano4 = new Piano('piano-four-container', {
