@@ -25,6 +25,7 @@ const uiDefaults = {
         whiteKeyBorder: 'gray',
     },
     borderWidth: '1px',
+    blackKeyWidthRatio: 0.75
 }
 
 
@@ -187,6 +188,7 @@ export default class PianoUI {
             this._initializeColors(uiDefaults.colors);
         }
         this.borderWidth = options.borderWidth ? options.borderWidth : uiDefaults.borderWidth;
+        this.blackKeyWidthRatio = options.blackKeyWidthRatio !== undefined ? options.blackKeyWidthRatio : uiDefaults.blackKeyWidthRatio;
     }
 
 
@@ -318,7 +320,7 @@ export default class PianoUI {
 
             if (i % 12 === 4 || i % 12 === 11) {
                 let ghostKey = document.createElement('template');
-                ghostKey.innerHTML = `<div class="${styles.ghostKey}"></div>`;
+                ghostKey.innerHTML = `<div class="${styles.ghostKey}" style="border: ${this.borderWidth} solid #000000"></div>`;
                 this.blackKeyContainer.appendChild(ghostKey.content.firstChild);
             }
         }
@@ -329,13 +331,26 @@ export default class PianoUI {
 
     _resizeBlackKeys() {
         let width = this.size[0].split(/([0-9]+)/).slice(1);
+        let whiteKeyWidth = Number(width[0]) / this.whiteKeyContainer.children.length
+
+        let marginRatio;
+
+        if (this.blackKeyWidthRatio === 1) {
+            // In this case, no key margin is desired. Add container padding and return.
+            this.blackKeyContainer.style.paddingLeft = `${whiteKeyWidth / 2}${width[1]}`;
+            this.blackKeyContainer.style.paddingRight = `${whiteKeyWidth / 2}${width[1]}`;
+            return;
+        } else {
+            marginRatio =  (1 - this.blackKeyWidthRatio) / 2;
+        }
+
         let blackKeyMargin;
 
         // percentage values are relative to parent container, so must be calculated separately
         if (width[1] !== '%') {
-            blackKeyMargin = (Number(width[0]) / this.whiteKeyContainer.children.length) / 8;
+            blackKeyMargin = whiteKeyWidth * marginRatio;
         } else {
-            blackKeyMargin = (Number(width[0]) / this.whiteKeyContainer.children.length) / (8 * (Number(width[0]) / 100));
+            blackKeyMargin = (whiteKeyWidth) / ((Number(width[0]) / 100) / marginRatio);
         }
 
         for (let bk of this.blackKeyContainer.children) {
@@ -343,8 +358,8 @@ export default class PianoUI {
             bk.style.marginRight = `${blackKeyMargin}${width[1]}`;
         };
 
-        this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin * 4}${width[1]}`;
-        this.blackKeyContainer.style.paddingRight = `${blackKeyMargin * 4}${width[1]}`;
+        this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin / (marginRatio * 2)}${width[1]}`;
+        this.blackKeyContainer.style.paddingRight = `${blackKeyMargin / (marginRatio * 2)}${width[1]}`;
     }
 
 

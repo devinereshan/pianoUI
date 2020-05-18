@@ -23,6 +23,7 @@ let piano2 = new Piano('piano-two-container', {
         whiteKeyHighlight: 'deeppink',
         blackKeyHighlight: 'deeppink',
     },
+    blackKeyWidthRatio: 0.9,
     borderWidth: '3px'
 });
 
