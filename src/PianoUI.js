@@ -42,10 +42,10 @@ class UIEmiter extends EventEmitter {
         });
     }
 
-    noteOff(key, eSource) {
+    noteOff(key, vel, eSource) {
         this.emit('noteOff', {
             note: key.id,
-            velocity: null,
+            velocity: vel,
             eventSource: eSource,
         });
     }
@@ -144,10 +144,10 @@ export default class PianoUI {
     }
 
 
-    setKeyInactive(number) {
+    setKeyInactive(number, velocity = 127) {
         let key = this.keys[number - this.range[0]];
         if (key) {
-            this._setInactive(key, 'external');
+            this._setInactive(key, velocity, 'external');
         }
     }
 
@@ -393,7 +393,7 @@ export default class PianoUI {
 
 
     _mouseUpKey(e) {
-        this._setInactive(e.target, 'mouseUp');
+        this._setInactive(e.target, 127, 'mouseUp');
     }
 
 
@@ -406,7 +406,7 @@ export default class PianoUI {
 
     _mouseOutKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this._setInactive(e.target, 'mouseOut');
+            this._setInactive(e.target, 127, 'mouseOut');
         }
     }
 
@@ -417,10 +417,10 @@ export default class PianoUI {
     }
 
 
-    _setInactive(pianoKey, eventSource) {
+    _setInactive(pianoKey, velocity, eventSource) {
         if (pianoKey) {
             pianoKey.style.backgroundColor = pianoKey.getAttribute('primaryColor');
-            this.emitter.noteOff(pianoKey, eventSource);
+            this.emitter.noteOff(pianoKey, velocity, eventSource);
         }
     }
 }
