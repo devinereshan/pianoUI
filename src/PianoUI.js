@@ -210,6 +210,17 @@ export default class PianoUI {
     }
 
 
+    setBlackKeyWidthRatio(ratio) {
+        this.blackKeyWidthRatio = ratio;
+        this._resizeBlackKeys();
+    }
+
+
+    getBlackKeyWidthRatio() {
+        return this.blackKeyWidthRatio;
+    }
+
+
     _parseOptions(options) {
         this.size = options.size ? options.size.slice() : uiDefaults.size.slice();
         this.range = options.range ? options.range.slice() : uiDefaults.range.slice();
@@ -365,16 +376,14 @@ export default class PianoUI {
         let width = this.size[0].split(/([0-9]+)/).slice(1);
         let whiteKeyWidth = Number(width[0]) / this.whiteKeyContainer.children.length
 
-        let marginRatio;
-
         if (this.blackKeyWidthRatio === 1) {
             // In this case, no key margin is desired. Add container padding and return.
             this.blackKeyContainer.style.paddingLeft = `${whiteKeyWidth / 2}${width[1]}`;
             this.blackKeyContainer.style.paddingRight = `${whiteKeyWidth / 2}${width[1]}`;
             return;
-        } else {
-            marginRatio =  (1 - this.blackKeyWidthRatio) / 2;
         }
+
+        let marginRatio =  (1 - this.blackKeyWidthRatio) / 2;
 
         let blackKeyMargin;
 

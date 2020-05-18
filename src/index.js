@@ -33,6 +33,10 @@ console.log(piano2.pianoUI.getMouseVelocity());
 
 console.log(piano2.pianoUI.getColor('whiteKeyBorder'));
 
+console.log(piano2.pianoUI.getBlackKeyWidthRatio());
+piano2.pianoUI.setBlackKeyWidthRatio(0.5);
+console.log(piano2.pianoUI.getBlackKeyWidthRatio());
+
 let piano4 = new Piano('piano-four-container', {
         size: ['500px', '125px'],
         range: [36, 48],
