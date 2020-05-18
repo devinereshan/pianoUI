@@ -24,9 +24,13 @@ let piano2 = new Piano('piano-two-container', {
         blackKeyHighlight: 'deeppink',
     },
     blackKeyWidthRatio: 0.9,
-    borderWidth: '3px',
+    blackKeyBorderWidth: '3px',
+    whiteKeyBorderWidth: '1px',
     mouseVelocity: 80,
 });
+
+piano2.pianoUI.setBlackKeyBorderWidth('5px');
+piano2.pianoUI.setWhiteKeyBorderWidth('5px');
 
 piano2.pianoUI.setMouseVelocity(60);
 console.log(piano2.pianoUI.getMouseVelocity());

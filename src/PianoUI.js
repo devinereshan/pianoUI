@@ -24,7 +24,8 @@ const uiDefaults = {
         blackKeyBorder: 'gray',
         whiteKeyBorder: 'gray',
     },
-    borderWidth: '1px',
+    whiteKeyBorderWidth: '1px',
+    blackKeyBorderWidth: '1px',
     blackKeyWidthRatio: 0.75,
     mouseVelocity: 127,
 }
@@ -238,16 +239,47 @@ export default class PianoUI {
     }
 
 
+    setBlackKeyBorderWidth(width) {
+        this.blackKeyBorderWidth = width;
+        for (let bk of this.blackKeyContainer.children) {
+            bk.style.borderWidth = this.blackKeyBorderWidth;
+        }
+    }
+
+
+    getBlackKeyBorderWidth() {
+        return this.blackKeyBorderWidth;
+    }
+
+
+    setWhiteKeyBorderWidth(width) {
+        this.whiteKeyBorderWidth = width;
+        for (let wk of this.whiteKeyContainer.children) {
+            wk.style.borderWidth = this.whiteKeyBorderWidth;
+        }
+    }
+
+
+    getWhiteKeyBorderWidth() {
+        return this.whiteKeyBorderWidth;
+    }
+
+
     _parseOptions(options) {
         this.size = options.size ? options.size.slice() : uiDefaults.size.slice();
         this.range = options.range ? options.range.slice() : uiDefaults.range.slice();
+
         if (options.colors) {
             this._initializeColors(options.colors);
         } else {
             this._initializeColors(uiDefaults.colors);
         }
-        this.borderWidth = options.borderWidth ? options.borderWidth : uiDefaults.borderWidth;
+
+        this.whiteKeyBorderWidth = options.whiteKeyBorderWidth ? options.whiteKeyBorderWidth : uiDefaults.whiteKeyBorderWidth;
+
+        this.blackKeyBorderWidth = options.blackKeyBorderWidth ? options.blackKeyBorderWidth : uiDefaults.blackKeyBorderWidth;
         this.blackKeyWidthRatio = options.blackKeyWidthRatio !== undefined ? options.blackKeyWidthRatio : uiDefaults.blackKeyWidthRatio;
+
         this.mouseVelocity = options.mouseVelocity !== undefined ? options.mouseVelocity : uiDefaults.mouseVelocity;
     }
 
@@ -293,7 +325,7 @@ export default class PianoUI {
     }
 
 
-    _createKey(id, className, keyColor, highlightColor, borderColor) {
+    _createKey(id, className, keyColor, highlightColor, borderColor, borderWidth) {
         let template = document.createElement('template');
         template.innerHTML = `
             <div
@@ -303,7 +335,7 @@ export default class PianoUI {
                 highlightColor="${highlightColor}"
                 style="
                     background-color: ${keyColor};
-                    border: ${this.borderWidth} solid ${borderColor}
+                    border: ${borderWidth} solid ${borderColor}
                 "
             >
             </div>
@@ -343,7 +375,8 @@ export default class PianoUI {
                     i, styles.whiteKey,
                     this.colors.whiteKey,
                     this.colors.whiteKeyHighlight,
-                    this.colors.whiteKeyBorder
+                    this.colors.whiteKeyBorder,
+                    this.whiteKeyBorderWidth
                 );
                 this._registerEventListeners(newKey);
                 this.whiteKeyContainer.appendChild(newKey);
@@ -354,7 +387,8 @@ export default class PianoUI {
                     styles.blackKey,
                     this.colors.blackKey,
                     this.colors.blackKeyHighlight,
-                    this.colors.blackKeyBorder
+                    this.colors.blackKeyBorder,
+                    this.blackKeyBorderWidth
                 );
                 this._registerEventListeners(newKey);
                 this.blackKeyContainer.appendChild(newKey);
@@ -363,7 +397,7 @@ export default class PianoUI {
 
             if (i % 12 === 4 || i % 12 === 11) {
                 let ghostKey = document.createElement('template');
-                ghostKey.innerHTML = `<div class="${styles.ghostKey}" style="border: ${this.borderWidth} solid #000000"></div>`;
+                ghostKey.innerHTML = `<div class="${styles.ghostKey}" style="border: ${this.blackKeyBorderWidth} solid #000000"></div>`;
                 this.blackKeyContainer.appendChild(ghostKey.content.firstChild);
             }
         }
