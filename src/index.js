@@ -102,3 +102,7 @@ piano2.setColors({
     blackKey: '#cc00cc88'
 
 });
+
+
+let testElement = document.getElementById('40');
+console.log(testElement);

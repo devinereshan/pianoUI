@@ -39,7 +39,7 @@ class UIEmiter extends EventEmitter {
 
     noteOn(key, vel, eSource) {
         this.emit('noteOn', {
-            note: key.id,
+            note: key.getAttribute('keyID'),
             velocity: vel,
             eventSource: eSource,
         });
@@ -47,7 +47,7 @@ class UIEmiter extends EventEmitter {
 
     noteOff(key, vel, eSource) {
         this.emit('noteOff', {
-            note: key.id,
+            note: key.getAttribute('keyID'),
             velocity: vel,
             eventSource: eSource,
         });
@@ -338,11 +338,11 @@ export default class PianoUI {
     }
 
 
-    _createKey(id, className, keyColor, highlightColor, borderColor, borderWidth) {
+    _createKey(keyID, className, keyColor, highlightColor, borderColor, borderWidth) {
         let template = document.createElement('template');
         template.innerHTML = `
             <div
-                id="${id}"
+                keyID="${keyID}"
                 class="${className}"
                 primaryColor="${keyColor}"
                 highlightColor="${highlightColor}"
