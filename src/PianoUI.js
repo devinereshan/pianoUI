@@ -136,7 +136,17 @@ export default class PianoUI {
     }
 
 
-    // TODO: add support for velocity 0-127
+    /**
+     * Return the value of this.colors[identifier] if it exists
+     * @param {string} identifier
+     */
+    getColor(identifier) {
+        if (this.colors[identifier]) {
+            return this.colors[identifier];
+        }
+    }
+
+
     setKeyActive(number, velocity = this.mouseVelocity) {
         let key = this.keys[number - this.range[0]];
         if (key) {
@@ -161,10 +171,20 @@ export default class PianoUI {
     }
 
 
+    getSize() {
+        return this.size.slice();
+    }
+
+
     setRange(range) {
         this.range = range.slice();
         this._removeAllKeys();
         this._createKeys();
+    }
+
+
+    getRange() {
+        return this.range.slice();
     }
 
 

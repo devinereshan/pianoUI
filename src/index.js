@@ -31,6 +31,8 @@ let piano2 = new Piano('piano-two-container', {
 piano2.pianoUI.setMouseVelocity(60);
 console.log(piano2.pianoUI.getMouseVelocity());
 
+console.log(piano2.pianoUI.getColor('whiteKeyBorder'));
+
 let piano4 = new Piano('piano-four-container', {
         size: ['500px', '125px'],
         range: [36, 48],
