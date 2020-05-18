@@ -24,8 +24,12 @@ let piano2 = new Piano('piano-two-container', {
         blackKeyHighlight: 'deeppink',
     },
     blackKeyWidthRatio: 0.9,
-    borderWidth: '3px'
+    borderWidth: '3px',
+    mouseVelocity: 80,
 });
+
+piano2.pianoUI.setMouseVelocity(60);
+console.log(piano2.pianoUI.getMouseVelocity());
 
 let piano4 = new Piano('piano-four-container', {
         size: ['500px', '125px'],

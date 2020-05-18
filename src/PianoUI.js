@@ -25,7 +25,8 @@ const uiDefaults = {
         whiteKeyBorder: 'gray',
     },
     borderWidth: '1px',
-    blackKeyWidthRatio: 0.75
+    blackKeyWidthRatio: 0.75,
+    mouseVelocity: 127,
 }
 
 
@@ -136,7 +137,7 @@ export default class PianoUI {
 
 
     // TODO: add support for velocity 0-127
-    setKeyActive(number, velocity = 127) {
+    setKeyActive(number, velocity = this.mouseVelocity) {
         let key = this.keys[number - this.range[0]];
         if (key) {
             this._setActive(key, velocity, 'external');
@@ -144,7 +145,7 @@ export default class PianoUI {
     }
 
 
-    setKeyInactive(number, velocity = 127) {
+    setKeyInactive(number, velocity = this.mouseVelocity) {
         let key = this.keys[number - this.range[0]];
         if (key) {
             this._setInactive(key, velocity, 'external');
@@ -179,6 +180,16 @@ export default class PianoUI {
     }
 
 
+    setMouseVelocity(velocity) {
+        this.mouseVelocity = velocity;
+    }
+
+
+    getMouseVelocity() {
+        return this.mouseVelocity;
+    }
+
+
     _parseOptions(options) {
         this.size = options.size ? options.size.slice() : uiDefaults.size.slice();
         this.range = options.range ? options.range.slice() : uiDefaults.range.slice();
@@ -189,6 +200,7 @@ export default class PianoUI {
         }
         this.borderWidth = options.borderWidth ? options.borderWidth : uiDefaults.borderWidth;
         this.blackKeyWidthRatio = options.blackKeyWidthRatio !== undefined ? options.blackKeyWidthRatio : uiDefaults.blackKeyWidthRatio;
+        this.mouseVelocity = options.mouseVelocity !== undefined ? options.mouseVelocity : uiDefaults.mouseVelocity;
     }
 
 
@@ -388,25 +400,25 @@ export default class PianoUI {
 
 
     _mouseDownKey(e) {
-        this._setActive(e.target, 127, 'mouseDown');
+        this._setActive(e.target, this.mouseVelocity, 'mouseDown');
     }
 
 
     _mouseUpKey(e) {
-        this._setInactive(e.target, 127, 'mouseUp');
+        this._setInactive(e.target, this.mouseVelocity, 'mouseUp');
     }
 
 
     _mouseOverKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this._setActive(e.target, 127, 'mouseOver');
+            this._setActive(e.target, this.mouseVelocity, 'mouseOver');
         }
     }
 
 
     _mouseOutKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this._setInactive(e.target, 127, 'mouseOut');
+            this._setInactive(e.target, this.mouseVelocity, 'mouseOut');
         }
     }
 
