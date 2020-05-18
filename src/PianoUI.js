@@ -27,6 +27,7 @@ const uiDefaults = {
     whiteKeyBorderWidth: '1px',
     blackKeyBorderWidth: '1px',
     blackKeyWidthRatio: 0.75,
+    blackKeyHeight: '55%',
     mouseVelocity: 127,
 }
 
@@ -222,6 +223,17 @@ export default class PianoUI {
     }
 
 
+    setBlackKeyHeight(height) {
+        this.blackKeyHeight = height;
+        this.blackKeyContainer.style.height = this.blackKeyHeight;
+    }
+
+
+    getBlackKeyHeight() {
+        return this.blackKeyHeight;
+    }
+
+
     setMediaQueries(mediaQueries) {
         for (let query in mediaQueries) {
 
@@ -279,6 +291,7 @@ export default class PianoUI {
 
         this.blackKeyBorderWidth = options.blackKeyBorderWidth ? options.blackKeyBorderWidth : uiDefaults.blackKeyBorderWidth;
         this.blackKeyWidthRatio = options.blackKeyWidthRatio !== undefined ? options.blackKeyWidthRatio : uiDefaults.blackKeyWidthRatio;
+        this.blackKeyHeight = options.blackKeyHeight !== undefined ? options.blackKeyHeight : uiDefaults.blackKeyHeight;
 
         this.mouseVelocity = options.mouseVelocity !== undefined ? options.mouseVelocity : uiDefaults.mouseVelocity;
     }
@@ -351,6 +364,7 @@ export default class PianoUI {
         this.keyContainer.style.height = `${this.size[1]}`;
 
         this.blackKeyContainer = this._createKeyContainer(styles.blackKeyContainer);
+        this.blackKeyContainer.style.height = this.blackKeyHeight;
         this.whiteKeyContainer = this._createKeyContainer(styles.whiteKeyContainer);
 
         this.keyContainer.appendChild(this.blackKeyContainer);

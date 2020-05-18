@@ -14,6 +14,8 @@ let piano3 = new Piano('piano-percentage-container', {
     range: [36, 48],
 });
 
+piano3.pianoUI.setBlackKeyHeight('100px');
+
 let piano2 = new Piano('piano-two-container', {
     size: ['500px', '125px'],
     range: [36, 48],
@@ -27,7 +29,10 @@ let piano2 = new Piano('piano-two-container', {
     blackKeyBorderWidth: '3px',
     whiteKeyBorderWidth: '1px',
     mouseVelocity: 80,
+    blackKeyHeight: '100px',
 });
+
+piano2.pianoUI.setBlackKeyHeight('50%');
 
 piano2.pianoUI.setBlackKeyBorderWidth('5px');
 piano2.pianoUI.setWhiteKeyBorderWidth('5px');
