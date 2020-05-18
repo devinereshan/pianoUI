@@ -56,11 +56,23 @@ let piano4 = new Piano('piano-four-container', {
             this.setSizeAndRange(['1000px', '250px'], [36, 60]);
             this.setColors({whiteKey: 'yellow'})
         } else {
-            this.setSizeAndRange(['800px', '200px'], [36, 60]);
-            this.setColors({whiteKey: 'white'})
+            if (window.innerWidth >= 800) {
+                this.setSizeAndRange(['800px', '200px'], [36, 60]);
+                this.setColors({whiteKey: 'white'})
+            }
         }
     },
 });
+
+piano4.pianoUI.setMediaQueries({
+    '(max-width: 600px)': function(e) {
+        if (e.matches) {
+            this.setBlackKeyWidthRatio(1);
+        } else {
+            this.setBlackKeyWidthRatio(0.75);
+        }
+    }
+})
 
 // piano4.pianoUI.setSize(['800px', '200px']);
 // piano4.pianoUI.setRange([24, 48]);

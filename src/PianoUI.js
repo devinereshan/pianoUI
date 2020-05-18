@@ -82,7 +82,7 @@ export default class PianoUI {
         this._buildUI(target, this.size);
 
         // media queries may reference ui, so register them last
-        this._registerMediaQueries();
+        this.setMediaQueries(this.mediaQueries);
     }
 
 
@@ -221,6 +221,23 @@ export default class PianoUI {
     }
 
 
+    setMediaQueries(mediaQueries) {
+        for (let query in mediaQueries) {
+
+            this.mediaQueries[query] = mediaQueries[query].bind(this);
+            let q = matchMedia(query);
+
+            // test if already matches
+            this.mediaQueries[query](q);
+
+            // then add listener
+            q.addListener(
+                this.mediaQueries[query]
+            );
+        }
+    }
+
+
     _parseOptions(options) {
         this.size = options.size ? options.size.slice() : uiDefaults.size.slice();
         this.range = options.range ? options.range.slice() : uiDefaults.range.slice();
@@ -243,23 +260,6 @@ export default class PianoUI {
             this.blackKeyContainer.lastChild.remove();
         }
         this.keys = [];
-    }
-
-
-    _registerMediaQueries() {
-        for (let query in this.mediaQueries) {
-
-            this.mediaQueries[query] = this.mediaQueries[query].bind(this);
-            let q = matchMedia(query);
-
-            // test if already matches
-            this.mediaQueries[query](q);
-
-            // then add listener
-            q.addListener(
-                this.mediaQueries[query]
-            );
-        }
     }
 
 
