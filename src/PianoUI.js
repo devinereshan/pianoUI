@@ -376,22 +376,18 @@ export default class PianoUI {
         let width = this.size[0].split(/([0-9]+)/).slice(1);
         let whiteKeyWidth = Number(width[0]) / this.whiteKeyContainer.children.length
 
-        if (this.blackKeyWidthRatio === 1) {
-            // In this case, no key margin is desired. Add container padding and return.
-            this.blackKeyContainer.style.paddingLeft = `${whiteKeyWidth / 2}${width[1]}`;
-            this.blackKeyContainer.style.paddingRight = `${whiteKeyWidth / 2}${width[1]}`;
-            return;
-        }
-
-        let marginRatio =  (1 - this.blackKeyWidthRatio) / 2;
-
         let blackKeyMargin;
+        let marginRatio;
 
-        // percentage values are relative to parent container, so must be calculated separately
-        if (width[1] !== '%') {
-            blackKeyMargin = whiteKeyWidth * marginRatio;
+        if (this.blackKeyWidthRatio === 1) {
+            blackKeyMargin = 0;
         } else {
-            blackKeyMargin = (whiteKeyWidth) / ((Number(width[0]) / 100) / marginRatio);
+            marginRatio =  (1 - this.blackKeyWidthRatio) / 2;
+            if (width[1] !== '%') {
+                blackKeyMargin = whiteKeyWidth * marginRatio;
+            } else {
+                blackKeyMargin = (whiteKeyWidth) / ((Number(width[0]) / 100) / marginRatio);
+            }
         }
 
         for (let bk of this.blackKeyContainer.children) {
@@ -399,8 +395,13 @@ export default class PianoUI {
             bk.style.marginRight = `${blackKeyMargin}${width[1]}`;
         };
 
-        this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin / (marginRatio * 2)}${width[1]}`;
-        this.blackKeyContainer.style.paddingRight = `${blackKeyMargin / (marginRatio * 2)}${width[1]}`;
+        if (blackKeyMargin === 0) {
+            this.blackKeyContainer.style.paddingLeft = `${whiteKeyWidth / 2}${width[1]}`;
+            this.blackKeyContainer.style.paddingRight = `${whiteKeyWidth / 2}${width[1]}`;
+        } else {
+            this.blackKeyContainer.style.paddingLeft = `${blackKeyMargin / (marginRatio * 2)}${width[1]}`;
+            this.blackKeyContainer.style.paddingRight = `${blackKeyMargin / (marginRatio * 2)}${width[1]}`;
+        }
     }
 
 
