@@ -4,15 +4,6 @@ const EventEmitter = require('events');
 const MOUSEUP = 0;
 const MOUSEDOWN = 1;
 
-const defaultColors = {
-    whiteKey: 'white',
-    blackKey: 'black',
-    whiteKeyHighlight: 'aqua',
-    blackKeyHighlight: 'aqua',
-    blackKeyBorder: 'gray',
-    whiteKeyBorder: 'gray',
-}
-
 const uiDefaults = {
     size:  ['800px', '200px'],
     range: [36, 60],
@@ -309,11 +300,11 @@ export default class PianoUI {
 
 
     _initializeColors(colors) {
-        for (let k in defaultColors) {
+        for (let k in uiDefaults.colors) {
             if (colors && colors[k]) {
                 this.colors[k] = colors[k];
             } else {
-                this.colors[k] = defaultColors[k];
+                this.colors[k] = uiDefaults.colors[k];
             }
         }
     }
