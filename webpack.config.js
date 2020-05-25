@@ -1,5 +1,14 @@
+const path = require('path');
+
 module.exports = {
     mode: 'development',
+    entry: './src/PianoUI.js',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'PianoUI.js',
+        library: 'PianoUI',
+        libraryTarget: 'umd',
+    },
     module: {
         rules: [
             {

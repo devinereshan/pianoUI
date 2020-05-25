@@ -46,13 +46,17 @@ class UIEmiter extends EventEmitter {
 }
 
 
-export default class PianoUI {
+export class Piano {
     constructor(target, options, mediaQueries) {
         this.emitter = new UIEmiter();
         this.target = target;
         this.colors = {};
 
-        this._parseOptions(options);
+        if (options === undefined) {
+            this._parseOptions(uiDefaults);
+        } else {
+            this._parseOptions(options);
+        }
 
         this.mouseState = MOUSEUP;
         this.mediaQueries = mediaQueries;

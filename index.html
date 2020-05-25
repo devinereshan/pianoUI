@@ -4,20 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piano UI</title>
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <button id="toggle-key">Toggle</button>
-    <div id="pianos-container">
-        <div id="piano-container"></div>
-        <div id="piano-percentage-container"></div>
+    <div id="piano-container"></div>
 
-        <div id="piano-two-container"></div>
-        <div id="piano-four-container"></div>
-    </div>
-    <!-- <piano-container></piano-container> -->
-
-    <script src="dist/main.js"></script>
+    <script src="dist/PianoUI.js"></script>
+    <script>
+        let piano = new PianoUI.Piano('piano-container');
+    </script>
 </body>
 </html>
