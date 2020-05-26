@@ -3,10 +3,39 @@ import { Piano } from '../src/PianoUI';
 
 
 describe('PianoUI.js - Piano.constructor()', function() {
-    it ("Failing to pass a valid 'target' parameter to constructor throws an error", function() {
+    it("Failing to pass a valid 'target' parameter to constructor throws an error", function() {
         assert.throw(() => {new Piano()}, Error, "Invalid 'target' parameter in Piano constructor. Could not find element matching 'undefined'");
-    })
-})
+    });
+
+    // Test all uiDefaults when no options are passed to constructor
+    let pianoContainer = document.createElement('div');
+    pianoContainer.id = 'piano-container';
+    document.body.appendChild(pianoContainer);
+    let piano = new Piano('#piano-container');
+
+    it("Piano options initialize to defaults when not passed as parameter to constructor", function() {
+        let uiDefaults = {
+            size:  ['800px', '200px'],
+            range: [36, 60],
+            colors: {
+                whiteKey: 'white',
+                blackKey: 'black',
+                whiteKeyHighlight: 'aqua',
+                blackKeyHighlight: 'aqua',
+                blackKeyBorder: 'gray',
+                whiteKeyBorder: 'gray',
+            },
+            whiteKeyBorderWidth: '1px',
+            blackKeyBorderWidth: '1px',
+            blackKeyWidthRatio: 0.75,
+            blackKeyHeight: '55%',
+            mouseVelocity: 127,
+        }
+        assert.deepEqual(uiDefaults, piano.options);
+        pianoContainer.innerHTML
+    });
+});
+
 // - all uiDefaults are properly initialized if no options are passed as second parameter
 // - all uiDefault values match the actual rendered values of Piano Element (color, borderwidth, etc...)
 // - passing partial options replaces the uiDefaults equivalent in final object but still utilizes uiDefaults for options not specified

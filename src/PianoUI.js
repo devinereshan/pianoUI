@@ -54,8 +54,9 @@ export class Piano {
             throw new Error(`Invalid 'target' parameter in Piano constructor. Could not find element matching '${target}'`);
         }
 
+        this.options = {};
         this.emitter = new UIEmiter();
-        this.colors = {};
+        this.options.colors = {};
 
         if (options === undefined) {
             this._parseOptions(uiDefaults);
@@ -79,7 +80,7 @@ export class Piano {
 
         this.keys = [];
 
-        this._buildUI(target, this.size);
+        this._buildUI(target, this.options.size);
 
         // media queries may reference ui, so register them last
         this.setMediaQueries(this.mediaQueries);
@@ -94,40 +95,40 @@ export class Piano {
     setColors(colors) {
         for (let k in colors) {
             // only update value if it is a valid key and is different from current value
-            if (this.colors[k] && this.colors[k] !== colors[k]) {
-                this.colors[k] = colors[k];
+            if (this.options.colors[k] && this.options.colors[k] !== colors[k]) {
+                this.options.colors[k] = colors[k];
 
                 switch(k) {
                     case 'whiteKey':
                         for (let wk of this.whiteKeyContainer.children) {
-                            wk.setAttribute('primaryColor', this.colors[k]);
-                            wk.style.backgroundColor = this.colors[k];
+                            wk.setAttribute('primaryColor', this.options.colors[k]);
+                            wk.style.backgroundColor = this.options.colors[k];
                         }
                         break;
                     case 'blackKey':
                         for (let bk of this.blackKeyContainer.children) {
-                            bk.setAttribute('primaryColor', this.colors[k]);
-                            bk.style.backgroundColor = this.colors[k];
+                            bk.setAttribute('primaryColor', this.options.colors[k]);
+                            bk.style.backgroundColor = this.options.colors[k];
                         }
                         break;
                     case 'whiteKeyHighlight':
                         for (let wk of this.whiteKeyContainer.children) {
-                            wk.setAttribute('highlightColor', this.colors[k]);
+                            wk.setAttribute('highlightColor', this.options.colors[k]);
                         }
                         break;
                     case 'blackKeyHighlight':
                         for (let bk of this.blackKeyContainer.children) {
-                            bk.setAttribute('highlightColor', this.colors[k]);
+                            bk.setAttribute('highlightColor', this.options.colors[k]);
                         }
                         break;
                     case 'blackKeyBorder':
                         for (let bk of this.blackKeyContainer.children) {
-                            bk.style.borderColor = this.colors[k];
+                            bk.style.borderColor = this.options.colors[k];
                         }
                         break;
                     case 'whiteKeyBorder':
                         for (let wk of this.whiteKeyContainer.children) {
-                            wk.style.borderColor = this.colors[k];
+                            wk.style.borderColor = this.options.colors[k];
                         }
                         break;
                 }
@@ -137,26 +138,26 @@ export class Piano {
 
 
     /**
-     * Return the value of this.colors[identifier] if it exists
+     * Return the value of this.options.colors[identifier] if it exists
      * @param {string} identifier
      */
     getColor(identifier) {
-        if (this.colors[identifier]) {
-            return this.colors[identifier];
+        if (this.options.colors[identifier]) {
+            return this.options.colors[identifier];
         }
     }
 
 
-    setKeyActive(number, velocity = this.mouseVelocity) {
-        let key = this.keys[number - this.range[0]];
+    setKeyActive(number, velocity = this.options.mouseVelocity) {
+        let key = this.keys[number - this.options.range[0]];
         if (key) {
             this._setActive(key, velocity, 'external');
         }
     }
 
 
-    setKeyInactive(number, velocity = this.mouseVelocity) {
-        let key = this.keys[number - this.range[0]];
+    setKeyInactive(number, velocity = this.options.mouseVelocity) {
+        let key = this.keys[number - this.options.range[0]];
         if (key) {
             this._setInactive(key, velocity, 'external');
         }
@@ -164,71 +165,71 @@ export class Piano {
 
 
     setSize(size) {
-        this.size = size.slice();
-        this.keyContainer.style.width = `${this.size[0]}`;
-        this.keyContainer.style.height = `${this.size[1]}`;
+        this.options.size = size.slice();
+        this.keyContainer.style.width = `${this.options.size[0]}`;
+        this.keyContainer.style.height = `${this.options.size[1]}`;
         this._resizeBlackKeys();
     }
 
 
     getSize() {
-        return this.size.slice();
+        return this.options.size.slice();
     }
 
 
     setRange(range) {
-        this.range = range.slice();
+        this.options.range = range.slice();
         this._removeAllKeys();
         this._createKeys();
     }
 
 
     getRange() {
-        return this.range.slice();
+        return this.options.range.slice();
     }
 
 
     // Calling setSize and setRange separately would call resizeBlackKeys twice.
     // This method exists to avoid that unnecessary double invocation.
     setSizeAndRange(size, range) {
-        this.size = size.slice();
-        this.range = range.slice();
+        this.options.size = size.slice();
+        this.options.range = range.slice();
         this._removeAllKeys();
-        this.keyContainer.style.width = `${this.size[0]}`;
-        this.keyContainer.style.height = `${this.size[1]}`;
+        this.keyContainer.style.width = `${this.options.size[0]}`;
+        this.keyContainer.style.height = `${this.options.size[1]}`;
         this._createKeys();
     }
 
 
     setMouseVelocity(velocity) {
-        this.mouseVelocity = velocity;
+        this.options.mouseVelocity = velocity;
     }
 
 
     getMouseVelocity() {
-        return this.mouseVelocity;
+        return this.options.mouseVelocity;
     }
 
 
     setBlackKeyWidthRatio(ratio) {
-        this.blackKeyWidthRatio = ratio;
+        this.options.blackKeyWidthRatio = ratio;
         this._resizeBlackKeys();
     }
 
 
     getBlackKeyWidthRatio() {
-        return this.blackKeyWidthRatio;
+        return this.options.blackKeyWidthRatio;
     }
 
 
     setBlackKeyHeight(height) {
-        this.blackKeyHeight = height;
-        this.blackKeyContainer.style.height = this.blackKeyHeight;
+        this.options.blackKeyHeight = height;
+        this.blackKeyContainer.style.height = this.options.blackKeyHeight;
     }
 
 
     getBlackKeyHeight() {
-        return this.blackKeyHeight;
+        return this.options.blackKeyHeight;
     }
 
 
@@ -250,34 +251,34 @@ export class Piano {
 
 
     setBlackKeyBorderWidth(width) {
-        this.blackKeyBorderWidth = width;
+        this.options.blackKeyBorderWidth = width;
         for (let bk of this.blackKeyContainer.children) {
-            bk.style.borderWidth = this.blackKeyBorderWidth;
+            bk.style.borderWidth = this.options.blackKeyBorderWidth;
         }
     }
 
 
     getBlackKeyBorderWidth() {
-        return this.blackKeyBorderWidth;
+        return this.options.blackKeyBorderWidth;
     }
 
 
     setWhiteKeyBorderWidth(width) {
-        this.whiteKeyBorderWidth = width;
+        this.options.whiteKeyBorderWidth = width;
         for (let wk of this.whiteKeyContainer.children) {
-            wk.style.borderWidth = this.whiteKeyBorderWidth;
+            wk.style.borderWidth = this.options.whiteKeyBorderWidth;
         }
     }
 
 
     getWhiteKeyBorderWidth() {
-        return this.whiteKeyBorderWidth;
+        return this.options.whiteKeyBorderWidth;
     }
 
 
     _parseOptions(options) {
-        this.size = options.size ? options.size.slice() : uiDefaults.size.slice();
-        this.range = options.range ? options.range.slice() : uiDefaults.range.slice();
+        this.options.size = options.size ? options.size.slice() : uiDefaults.size.slice();
+        this.options.range = options.range ? options.range.slice() : uiDefaults.range.slice();
 
         if (options.colors) {
             this._initializeColors(options.colors);
@@ -285,13 +286,13 @@ export class Piano {
             this._initializeColors(uiDefaults.colors);
         }
 
-        this.whiteKeyBorderWidth = options.whiteKeyBorderWidth ? options.whiteKeyBorderWidth : uiDefaults.whiteKeyBorderWidth;
+        this.options.whiteKeyBorderWidth = options.whiteKeyBorderWidth ? options.whiteKeyBorderWidth : uiDefaults.whiteKeyBorderWidth;
 
-        this.blackKeyBorderWidth = options.blackKeyBorderWidth ? options.blackKeyBorderWidth : uiDefaults.blackKeyBorderWidth;
-        this.blackKeyWidthRatio = options.blackKeyWidthRatio !== undefined ? options.blackKeyWidthRatio : uiDefaults.blackKeyWidthRatio;
-        this.blackKeyHeight = options.blackKeyHeight !== undefined ? options.blackKeyHeight : uiDefaults.blackKeyHeight;
+        this.options.blackKeyBorderWidth = options.blackKeyBorderWidth ? options.blackKeyBorderWidth : uiDefaults.blackKeyBorderWidth;
+        this.options.blackKeyWidthRatio = options.blackKeyWidthRatio !== undefined ? options.blackKeyWidthRatio : uiDefaults.blackKeyWidthRatio;
+        this.options.blackKeyHeight = options.blackKeyHeight !== undefined ? options.blackKeyHeight : uiDefaults.blackKeyHeight;
 
-        this.mouseVelocity = options.mouseVelocity !== undefined ? options.mouseVelocity : uiDefaults.mouseVelocity;
+        this.options.mouseVelocity = options.mouseVelocity !== undefined ? options.mouseVelocity : uiDefaults.mouseVelocity;
     }
 
 
@@ -309,9 +310,9 @@ export class Piano {
     _initializeColors(colors) {
         for (let k in uiDefaults.colors) {
             if (colors && colors[k]) {
-                this.colors[k] = colors[k];
+                this.options.colors[k] = colors[k];
             } else {
-                this.colors[k] = uiDefaults.colors[k];
+                this.options.colors[k] = uiDefaults.colors[k];
             }
         }
     }
@@ -319,12 +320,12 @@ export class Piano {
 
     _correctRange() {
         let whiteKeyIndexes = [0, 2, 4, 5, 7, 9, 11];
-        if (!whiteKeyIndexes.includes(this.range[0] % 12)) {
-            this.range[0] = Math.max( this.range[0] - 1, 0);
+        if (!whiteKeyIndexes.includes(this.options.range[0] % 12)) {
+            this.options.range[0] = Math.max( this.options.range[0] - 1, 0);
         }
 
-        if (!whiteKeyIndexes.includes(this.range[1] % 12)) {
-            this.range[1] = Math.max( this.range[1] - 1, 0);
+        if (!whiteKeyIndexes.includes(this.options.range[1] % 12)) {
+            this.options.range[1] = Math.max( this.options.range[1] - 1, 0);
         }
     }
 
@@ -358,11 +359,11 @@ export class Piano {
 
     _createContainers() {
         this.keyContainer = this._createKeyContainer(styles.keyContainer);
-        this.keyContainer.style.width = `${this.size[0]}`;
-        this.keyContainer.style.height = `${this.size[1]}`;
+        this.keyContainer.style.width = `${this.options.size[0]}`;
+        this.keyContainer.style.height = `${this.options.size[1]}`;
 
         this.blackKeyContainer = this._createKeyContainer(styles.blackKeyContainer);
-        this.blackKeyContainer.style.height = this.blackKeyHeight;
+        this.blackKeyContainer.style.height = this.options.blackKeyHeight;
         this.whiteKeyContainer = this._createKeyContainer(styles.whiteKeyContainer);
 
         this.keyContainer.appendChild(this.blackKeyContainer);
@@ -380,15 +381,15 @@ export class Piano {
     _createKeys() {
         let keyPattern = ['w', 'b', 'w', 'b', 'w', 'w', 'b', 'w', 'b', 'w', 'b', 'w'];
 
-        for (let i = this.range[0]; i < this.range[1] + 1; i++) {
+        for (let i = this.options.range[0]; i < this.options.range[1] + 1; i++) {
 
             if (keyPattern[i % 12] === 'w') {
                 let newKey = this._createKey(
                     i, styles.whiteKey,
-                    this.colors.whiteKey,
-                    this.colors.whiteKeyHighlight,
-                    this.colors.whiteKeyBorder,
-                    this.whiteKeyBorderWidth
+                    this.options.colors.whiteKey,
+                    this.options.colors.whiteKeyHighlight,
+                    this.options.colors.whiteKeyBorder,
+                    this.options.whiteKeyBorderWidth
                 );
                 this._registerEventListeners(newKey);
                 this.whiteKeyContainer.appendChild(newKey);
@@ -397,10 +398,10 @@ export class Piano {
                 let newKey = this._createKey(
                     i,
                     styles.blackKey,
-                    this.colors.blackKey,
-                    this.colors.blackKeyHighlight,
-                    this.colors.blackKeyBorder,
-                    this.blackKeyBorderWidth
+                    this.options.colors.blackKey,
+                    this.options.colors.blackKeyHighlight,
+                    this.options.colors.blackKeyBorder,
+                    this.options.blackKeyBorderWidth
                 );
                 this._registerEventListeners(newKey);
                 this.blackKeyContainer.appendChild(newKey);
@@ -409,7 +410,7 @@ export class Piano {
 
             if (i % 12 === 4 || i % 12 === 11) {
                 let ghostKey = document.createElement('template');
-                ghostKey.innerHTML = `<div class="${styles.ghostKey}" style="border: ${this.blackKeyBorderWidth} solid #000000"></div>`;
+                ghostKey.innerHTML = `<div class="${styles.ghostKey}" style="border: ${this.options.blackKeyBorderWidth} solid #000000"></div>`;
                 this.blackKeyContainer.appendChild(ghostKey.content.firstChild);
             }
         }
@@ -419,16 +420,16 @@ export class Piano {
 
 
     _resizeBlackKeys() {
-        let width = this.size[0].split(/([0-9]+)/).slice(1);
+        let width = this.options.size[0].split(/([0-9]+)/).slice(1);
         let whiteKeyWidth = Number(width[0]) / this.whiteKeyContainer.children.length
 
         let blackKeyMargin;
         let marginRatio;
 
-        if (this.blackKeyWidthRatio === 1) {
+        if (this.options.blackKeyWidthRatio === 1) {
             blackKeyMargin = 0;
         } else {
-            marginRatio =  (1 - this.blackKeyWidthRatio) / 2;
+            marginRatio =  (1 - this.options.blackKeyWidthRatio) / 2;
             if (width[1] !== '%') {
                 blackKeyMargin = whiteKeyWidth * marginRatio;
             } else {
@@ -476,25 +477,25 @@ export class Piano {
 
 
     _mouseDownKey(e) {
-        this._setActive(e.target, this.mouseVelocity, 'mouseDown');
+        this._setActive(e.target, this.options.mouseVelocity, 'mouseDown');
     }
 
 
     _mouseUpKey(e) {
-        this._setInactive(e.target, this.mouseVelocity, 'mouseUp');
+        this._setInactive(e.target, this.options.mouseVelocity, 'mouseUp');
     }
 
 
     _mouseOverKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this._setActive(e.target, this.mouseVelocity, 'mouseOver');
+            this._setActive(e.target, this.options.mouseVelocity, 'mouseOver');
         }
     }
 
 
     _mouseOutKey(e) {
         if (this.mouseState === MOUSEDOWN) {
-            this._setInactive(e.target, this.mouseVelocity, 'mouseOut');
+            this._setInactive(e.target, this.options.mouseVelocity, 'mouseOut');
         }
     }
 
