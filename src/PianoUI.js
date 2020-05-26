@@ -48,8 +48,13 @@ class UIEmiter extends EventEmitter {
 
 export class Piano {
     constructor(target, options, mediaQueries) {
+
+        this.pianoContainer = document.querySelector(target);
+        if (this.pianoContainer === null) {
+            throw new Error(`Invalid 'target' parameter in Piano constructor. Could not find element matching '${target}'`);
+        }
+
         this.emitter = new UIEmiter();
-        this.target = target;
         this.colors = {};
 
         if (options === undefined) {
@@ -71,8 +76,6 @@ export class Piano {
         window.addEventListener('mouseup', () => {
             this.mouseState = MOUSEUP;
         });
-
-        this.pianoContainer = document.getElementById(this.target);
 
         this.keys = [];
 
