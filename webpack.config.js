@@ -1,6 +1,6 @@
 const path = require('path');
 
-module.exports = {
+const defaults = {
     mode: 'development',
     entry: './src/PianoUI.js',
     output: {
@@ -26,3 +26,19 @@ module.exports = {
         ],
     },
 };
+
+const test = Object.assign({}, defaults, {
+    entry: './test/PianoUI.test.js',
+    output: {
+        filename: 'PianoUI.test.js',
+    },
+});
+
+module.exports = env => {
+    console.log(env);
+    if (env.test) {
+        return test;
+    } else {
+        return defaults;
+    }
+}
