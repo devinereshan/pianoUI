@@ -34,9 +34,17 @@ describe('PianoUI.js - Piano.constructor()', function() {
         assert.deepEqual(uiDefaults, piano.options);
         pianoContainer.innerHTML
     });
+
+    it("Piano actual width matches default size", function() {
+        assert.equal(piano.keyContainer.offsetWidth, 800);
+    });
+
+    it("Piano actual height matches default size", function() {
+        assert.equal(piano.keyContainer.offsetHeight, 200);
+    });
 });
 
-// - all uiDefaults are properly initialized if no options are passed as second parameter
+
 // - all uiDefault values match the actual rendered values of Piano Element (color, borderwidth, etc...)
 // - passing partial options replaces the uiDefaults equivalent in final object but still utilizes uiDefaults for options not specified
 // - passing options does not mutate uiDefaults in any way so that future piano objects have access to the original defaults
