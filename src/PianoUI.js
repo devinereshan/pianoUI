@@ -408,7 +408,7 @@ export class Piano {
                 this.keys.push(newKey);
             }
 
-            if (i % 12 === 4 || i % 12 === 11) {
+            if ((i % 12 === 4 || i % 12 === 11) && i < this.options.range[1]) {
                 let ghostKey = document.createElement('template');
                 ghostKey.innerHTML = `<div class="${styles.ghostKey}" style="border: ${this.options.blackKeyBorderWidth} solid #000000"></div>`;
                 this.blackKeyContainer.appendChild(ghostKey.content.firstChild);
