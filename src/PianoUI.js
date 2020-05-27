@@ -179,6 +179,7 @@ export class Piano {
 
     setRange(range) {
         this.options.range = range.slice();
+        this._correctRange();
         this._removeAllKeys();
         this._createKeys();
     }
@@ -194,6 +195,7 @@ export class Piano {
     setSizeAndRange(size, range) {
         this.options.size = size.slice();
         this.options.range = range.slice();
+        this._correctRange();
         this._removeAllKeys();
         this.keyContainer.style.width = `${this.options.size[0]}`;
         this.keyContainer.style.height = `${this.options.size[1]}`;
