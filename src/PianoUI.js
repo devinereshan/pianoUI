@@ -30,7 +30,7 @@ class UIEmiter extends EventEmitter {
 
     noteOn(key, vel, eSource) {
         this.emit('noteOn', {
-            note: key.getAttribute('keyID'),
+            note: key.getAttribute('pui-keyID'),
             velocity: vel,
             eventSource: eSource,
         });
@@ -38,7 +38,7 @@ class UIEmiter extends EventEmitter {
 
     noteOff(key, vel, eSource) {
         this.emit('noteOff', {
-            note: key.getAttribute('keyID'),
+            note: key.getAttribute('pui-keyID'),
             velocity: vel,
             eventSource: eSource,
         });
@@ -96,24 +96,24 @@ export class Piano {
                 switch(k) {
                     case 'whiteKey':
                         for (let wk of this.whiteKeyContainer.children) {
-                            wk.setAttribute('primaryColor', this.options.colors[k]);
+                            wk.setAttribute('pui-primaryColor', this.options.colors[k]);
                             wk.style.backgroundColor = this.options.colors[k];
                         }
                         break;
                     case 'blackKey':
                         for (let bk of this.blackKeyContainer.children) {
-                            bk.setAttribute('primaryColor', this.options.colors[k]);
+                            bk.setAttribute('pui-primaryColor', this.options.colors[k]);
                             bk.style.backgroundColor = this.options.colors[k];
                         }
                         break;
                     case 'whiteKeyHighlight':
                         for (let wk of this.whiteKeyContainer.children) {
-                            wk.setAttribute('highlightColor', this.options.colors[k]);
+                            wk.setAttribute('pui-highlightColor', this.options.colors[k]);
                         }
                         break;
                     case 'blackKeyHighlight':
                         for (let bk of this.blackKeyContainer.children) {
-                            bk.setAttribute('highlightColor', this.options.colors[k]);
+                            bk.setAttribute('pui-highlightColor', this.options.colors[k]);
                         }
                         break;
                     case 'blackKeyBorder':
@@ -321,10 +321,10 @@ export class Piano {
         let template = document.createElement('template');
         template.innerHTML = `
             <div
-                keyID="${keyID}"
+                pui-keyID="${keyID}"
                 class="${className}"
-                primaryColor="${keyColor}"
-                highlightColor="${highlightColor}"
+                pui-primaryColor="${keyColor}"
+                pui-highlightColor="${highlightColor}"
                 style="
                     background-color: ${keyColor};
                     border: ${borderWidth} solid ${borderColor}
@@ -481,14 +481,14 @@ export class Piano {
 
 
     _setActive(pianoKey, velocity, eventSource) {
-        pianoKey.style.backgroundColor = pianoKey.getAttribute('highlightColor');
+        pianoKey.style.backgroundColor = pianoKey.getAttribute('pui-highlightColor');
         this.emitter.noteOn(pianoKey, velocity, eventSource);
     }
 
 
     _setInactive(pianoKey, velocity, eventSource) {
         if (pianoKey) {
-            pianoKey.style.backgroundColor = pianoKey.getAttribute('primaryColor');
+            pianoKey.style.backgroundColor = pianoKey.getAttribute('pui-primaryColor');
             this.emitter.noteOff(pianoKey, velocity, eventSource);
         }
     }
