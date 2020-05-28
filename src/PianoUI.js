@@ -47,8 +47,7 @@ class UIEmiter extends EventEmitter {
 
 
 export class Piano {
-    constructor(target, options, mediaQueries) {
-
+    constructor(target, options) {
         this.pianoContainer = document.querySelector(target);
         if (this.pianoContainer === null) {
             throw new Error(`Invalid 'target' parameter in Piano constructor. Could not find element matching '${target}'`);
@@ -65,7 +64,6 @@ export class Piano {
         }
 
         this.mouseState = MOUSEUP;
-        this.mediaQueries = mediaQueries;
 
         // ensure range starts and ends with a white key.
         this._correctRange();
@@ -81,9 +79,6 @@ export class Piano {
         this.keys = [];
 
         this._buildUI(target, this.options.size);
-
-        // media queries may reference ui, so register them last
-        this.setMediaQueries(this.mediaQueries);
     }
 
 
@@ -232,23 +227,6 @@ export class Piano {
 
     getBlackKeyHeight() {
         return this.options.blackKeyHeight;
-    }
-
-
-    setMediaQueries(mediaQueries) {
-        for (let query in mediaQueries) {
-
-            this.mediaQueries[query] = mediaQueries[query].bind(this);
-            let q = matchMedia(query);
-
-            // test if already matches
-            this.mediaQueries[query](q);
-
-            // then add listener
-            q.addListener(
-                this.mediaQueries[query]
-            );
-        }
     }
 
 
