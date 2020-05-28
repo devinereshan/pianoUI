@@ -143,6 +143,8 @@ describe('PianoUI.js - Piano constructor options', function() {
     });
 });
 
+
+
 describe('PianoUI.js - range tests', function() {
     // Ensure spacing of black keys is properly handled for various start and end values of range
     it('Black keys are properly sized and spaced for range C - C', function() {
@@ -257,19 +259,8 @@ describe('PianoUI.js - range tests', function() {
 });
 
 
-// - invalid options are not processed or stored in anyway and do not impact object instantiation.
-// - media queries are properly registered
-
-
-// Media queries
-// original media query object is copied and not mutated
-// invalid queries throw error
-// queries are properly registered with 'this' bound to piano object
-
 // test all getters and setters
 // invalid values make no changes to ui but log a warning
 
 // When amount of piano keys changes through set range, old key objects are properly removed from DOM and memory is freed
-
-// TODO: update piano key custom attribute names. prepend with pianoui- or pui- or pianokey- or something...
 

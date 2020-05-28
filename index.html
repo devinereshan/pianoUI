@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="node_modules/mocha/mocha.css">
-    <title>Test Runner | PianoUI</title>
+    <title>PianoUI</title>
 </head>
 <body>
-    <div id="mocha"></div>
+    <div id="piano-container"></div>
 
-    <script src="node_modules/mocha/mocha.js"></script>
-    <script class="mocha-init">
-        mocha.setup('bdd');
-        mocha.checkLeaks();
-    </script>
+    <script src="dist/PianoUI.js"></script>
+    <script>
+        let piano = new PianoUI.Piano('#piano-container');
+        function testQuery(e) {
+            if (e.matches) {
+                piano.setColors({whiteKey: 'white'});
+            } else {
+                piano.setColors({whiteKey: 'blue'});
+            }
+        }
 
-    <script src="dist/PianoUI.test.js"></script>
-    <script class="mocha-exec">
-        mocha.run();
+        let q = matchMedia('(min-width: 700px)');
+        testQuery(q);
+        q.addListener(testQuery);
     </script>
 </body>
 </html>

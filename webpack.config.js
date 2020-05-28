@@ -35,7 +35,6 @@ const test = Object.assign({}, defaults, {
 });
 
 module.exports = env => {
-    console.log(env);
     if (env.test) {
         return test;
     } else {
