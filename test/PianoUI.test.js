@@ -259,6 +259,120 @@ describe('PianoUI.js - range tests', function() {
 });
 
 
+describe('PianoUI.js - getters and setters', function() {
+
+    it('Should get the specified color', function() {
+        let pianoContainer = createPianoContainer('piano-container');
+        let piano = new Piano('#piano-container');
+
+        let actual = piano.getColor('whiteKey');
+        assert.equal(actual, 'white');
+
+        document.body.removeChild(pianoContainer);
+    });
+
+    it('Should set a single color', function() {
+        let pianoContainer = createPianoContainer('piano-container');
+        let piano = new Piano('#piano-container');
+
+        piano.setColors({'whiteKey': 'blue'});
+
+        let expected = {
+            whiteKey: 'blue',
+            blackKey: 'black',
+            whiteKeyHighlight: 'aqua',
+            blackKeyHighlight: 'aqua',
+            blackKeyBorder: 'gray',
+            whiteKeyBorder: 'gray',
+        }
+
+        assert.deepEqual(piano.options.colors, expected);
+
+        document.body.removeChild(pianoContainer);
+    });
+
+    it('Should set multiple colors', function() {
+        let pianoContainer = createPianoContainer('piano-container');
+        let piano = new Piano('#piano-container');
+
+        piano.setColors({
+            whiteKey: 'blue',
+            blackKey: 'green',
+            whiteKeyHighlight: 'pink',
+            blackKeyHighlight: 'pink',
+            blackKeyBorder: 'white',
+            whiteKeyBorder: 'orange',
+        });
+
+        let expected = {
+            whiteKey: 'blue',
+            blackKey: 'green',
+            whiteKeyHighlight: 'pink',
+            blackKeyHighlight: 'pink',
+            blackKeyBorder: 'white',
+            whiteKeyBorder: 'orange',
+        }
+
+        assert.deepEqual(piano.options.colors, expected);
+
+        document.body.removeChild(pianoContainer);
+    });
+
+    it('Should not set invalid color option', function() {
+        let pianoContainer = createPianoContainer('piano-container');
+        let piano = new Piano('#piano-container');
+
+        piano.setColors({
+            bologna: 'blue',
+        });
+
+        let expected = {
+            whiteKey: 'white',
+            blackKey: 'black',
+            whiteKeyHighlight: 'aqua',
+            blackKeyHighlight: 'aqua',
+            blackKeyBorder: 'gray',
+            whiteKeyBorder: 'gray',
+        }
+
+        assert.deepEqual(piano.options.colors, expected);
+
+        document.body.removeChild(pianoContainer);
+    });
+
+    it('Should update the width of the keyboard', function() {
+        let pianoContainer = createPianoContainer('piano-container');
+        let piano = new Piano('#piano-container');
+
+        piano.setSize(['600px', '150px']);
+
+        let expected = [600, 150];
+        let actual = [];
+        actual.push(piano.keyContainer.offsetWidth);
+        actual.push(piano.keyContainer.offsetHeight);
+
+        assert.deepEqual(actual, expected);
+
+        document.body.removeChild(pianoContainer);
+    });
+
+    it('Getter should match actual keyboard size', function() {
+        let pianoContainer = createPianoContainer('piano-container');
+        let piano = new Piano('#piano-container');
+
+        let expected = piano.getSize();
+        let actual = [];
+        actual.push(piano.keyContainer.offsetWidth + "px");
+        actual.push(piano.keyContainer.offsetHeight + "px");
+
+        assert.deepEqual(actual, expected);
+
+        document.body.removeChild(pianoContainer);
+    });
+
+
+
+});
 // test all getters and setters
 // invalid values make no changes to ui but log a warning
 
