@@ -34,9 +34,21 @@ const test = Object.assign({}, defaults, {
     },
 });
 
+const minify = Object.assign({}, defaults, {
+    mode: 'production',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'PianoUI.min.js',
+        library: 'PianoUI',
+        libraryTarget: 'umd',
+    },
+})
+
 module.exports = env => {
     if (env.test) {
         return test;
+    } else if (env.minify) {
+        return minify;
     } else {
         return defaults;
     }

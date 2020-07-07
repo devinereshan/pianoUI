@@ -5,6 +5,7 @@
   "main": "PianoUI.js",
   "scripts": {
     "test": "webpack --env.test",
+    "minify": "webpack --env.minify",
     "build": "webpack --env.defaults"
   },
   "keywords": [],
