@@ -1,4 +1,5 @@
 import styles from './PianoUI.module.css';
+import { isArray, isString } from 'util';
 const EventEmitter = require('events');
 
 const MOUSEUP = 0;
@@ -160,10 +161,42 @@ export class Piano {
 
 
     setSize(size) {
+        console.log('setting size');
+        console.log(size);
+        if(!this._validateSize(size)) {
+            throw new Error(`Piano.setSize() - Unable to set size. Unrecognized value(s): [${(size)}]`);
+        }
         this.options.size = size.slice();
         this.keyContainer.style.width = `${this.options.size[0]}`;
         this.keyContainer.style.height = `${this.options.size[1]}`;
         this._resizeBlackKeys();
+    }
+
+
+    _validateSize(size) {
+        if (!isArray(size)) {
+            return false;
+        }
+
+        if (!isString(size[0]) || !isString(size[1])) {
+            return false;
+        }
+        let width = size[0].split(/([0-9]+)/).slice(1);
+        let height = size[1].split(/([0-9]+)/).slice(1);
+        console.log(width);
+        console.log(height);
+
+        if (isNaN(Number(width[0])) || isNaN(Number(height[0]))) {
+            return false;
+        }
+
+        let units = ['px', '%', 'vh', 'vw', 'in', 'cm', 'mm', 'Q', 'pc', 'pt'];
+
+        if (!units.includes(width[1]) || !units.includes(height[1])) {
+            return false;
+        }
+
+        return true;
     }
 
 

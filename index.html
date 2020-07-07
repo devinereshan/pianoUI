@@ -7,21 +7,90 @@
 </head>
 <body>
     <div id="piano-container"></div>
+    <button id="midi-on">midi on</button>
+    <button id="midi-off">midi off</button>
 
     <script src="dist/PianoUI.js"></script>
+    <script src="node_modules/tone/build/Tone.js"></script>
     <script>
         let piano = new PianoUI.Piano('#piano-container');
-        function testQuery(e) {
-            if (e.matches) {
-                piano.setColors({whiteKey: 'white'});
-            } else {
-                piano.setColors({whiteKey: 'blue'});
+        let synth = new Tone.Synth().toMaster();
+
+        try {
+            navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
+        } catch(e) {
+            console.log('Browser does not support midi');
+        }
+
+        function onMIDISuccess(midiAccess) {
+            console.log('success');
+            var inputs = midiAccess.inputs;
+            console.log(inputs.values());
+
+            for (let input of midiAccess.inputs.values()) {
+                input.onmidimessage = getMIDIMessage;
+                console.log(input);
+
             }
         }
 
-        let q = matchMedia('(min-width: 700px)');
-        testQuery(q);
-        q.addListener(testQuery);
+        function onMIDIFailure() {
+            console.log('failure');
+        }
+
+        let notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+        function getMIDIMessage(message) {
+            console.log(message);
+
+            let command = message.data[0];
+            let note = message.data[1];
+            let velocity = (message.data.length > 2) ? message.data[2] : 0; // a velocity value might not be included with a noteOff command
+            console.log(command, note, velocity);
+
+            let letter = notes[note % 12]
+            let octave = Math.floor(note / 12);
+            switch (command) {
+                case 144: // noteOn
+                    if (velocity > 0) {
+
+                        piano.setKeyActive(note, velocity);
+
+                        synth.triggerAttack(letter + octave, undefined, velocity);
+
+                    } else {
+                        piano.setKeyInactive(note);
+                        synth.triggerRelease();
+                    }
+                    break;
+                case 128: // noteOff
+                    piano.setKeyInactive(note);
+                    synth.triggerRelease();
+                    break;
+                }
+        }
+
+        document.getElementById('midi-on').addEventListener('click', () => {
+            piano.setKeyActive(48);
+        });
+
+        document.getElementById('midi-off').addEventListener('click', () => {
+            piano.setKeyInactive(48);
+        });
+
+        // function testQuery(e) {
+        //     if (e.matches) {
+        //         piano.setColors({whiteKey: 'white'});
+        //     } else {
+        //         piano.setColors({whiteKey: 'blue'});
+        //     }
+        // }
+
+        // let q = matchMedia('(min-width: 700px)');
+        // testQuery(q);
+        // q.addListener(testQuery);
+
+        // piano.setSize([800, 200]);
     </script>
 </body>
 </html>

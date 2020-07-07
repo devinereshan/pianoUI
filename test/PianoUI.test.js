@@ -340,7 +340,7 @@ describe('PianoUI.js - getters and setters', function() {
         document.body.removeChild(pianoContainer);
     });
 
-    it('Should update the width of the keyboard', function() {
+    it('Size setter should update the width of the keyboard', function() {
         let pianoContainer = createPianoContainer('piano-container');
         let piano = new Piano('#piano-container');
 
@@ -356,7 +356,7 @@ describe('PianoUI.js - getters and setters', function() {
         document.body.removeChild(pianoContainer);
     });
 
-    it('Getter should match actual keyboard size', function() {
+    it('Size getter should match actual keyboard size', function() {
         let pianoContainer = createPianoContainer('piano-container');
         let piano = new Piano('#piano-container');
 
@@ -370,6 +370,36 @@ describe('PianoUI.js - getters and setters', function() {
         document.body.removeChild(pianoContainer);
     });
 
+    it('Range getter should match actual keyboard range', function() {
+        let pianoContainer = createPianoContainer('piano-container');
+        let piano = new Piano('#piano-container');
+
+        let expected = piano.getRange();
+        let actual = [];
+        actual.push(Number(piano.keys[0].getAttribute('pui-keyID')));
+        actual.push(Number(piano.keys[piano.keys.length - 1].getAttribute('pui-keyID')));
+
+        assert.deepEqual(actual, expected);
+
+        document.body.removeChild(pianoContainer);
+    });
+
+
+
+    it('Range setter should update range of keyboard', function() {
+        let pianoContainer = createPianoContainer('piano-container');
+        let piano = new Piano('#piano-container');
+
+        piano.setRange([0, 48]);
+
+        let actual = piano.getRange();
+        let expected = [0, 48];
+
+        console.log()
+        assert.deepEqual(actual, expected);
+
+        document.body.removeChild(pianoContainer);
+    });
 
 
 });
