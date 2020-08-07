@@ -6,10 +6,10 @@ A customizable piano interface for web audio applications.
 
 * [Installation](#installation)
 * [Usage](#usage)
-    * [Constructor](##constructor)
-    * [Options](##options)
+    * [Constructor](#constructor)
+    * [Options](#options)
     * [Getters / Setters](#getters--setters)
-    * [Events](##events)
+    * [Events](#events)
 * [License](#license)
 * [Examples](#examples)
 
