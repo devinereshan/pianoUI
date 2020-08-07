@@ -29,17 +29,17 @@ class UIEmiter extends EventEmitter {
         super();
     }
 
-    noteOn(key, vel, eSource) {
+    noteOn(number, vel, eSource) {
         this.emit('noteOn', {
-            note: key.getAttribute('pui-keyID'),
+            note: number,
             velocity: vel,
             eventSource: eSource,
         });
     }
 
-    noteOff(key, vel, eSource) {
+    noteOff(number, vel, eSource) {
         this.emit('noteOff', {
-            note: key.getAttribute('pui-keyID'),
+            note: number,
             velocity: vel,
             eventSource: eSource,
         });
@@ -147,16 +147,18 @@ export class Piano {
     setKeyActive(number, velocity = this.options.mouseVelocity) {
         let key = this.keys[number - this.options.range[0]];
         if (key) {
-            this._setActive(key, velocity, 'external');
+            this._setActive(key);
         }
+        this.emitter.noteOn(number, velocity, 'external');
     }
 
 
     setKeyInactive(number, velocity = this.options.mouseVelocity) {
         let key = this.keys[number - this.options.range[0]];
         if (key) {
-            this._setInactive(key, velocity, 'external');
+            this._setInactive(key);
         }
+        this.emitter.noteOff(number, velocity, 'external');
     }
 
 
@@ -173,6 +175,7 @@ export class Piano {
     }
 
 
+    // TODO: remove this method. It's not practical to protect the programmer from themselves in this way.
     _validateSize(size) {
         if (!isArray(size)) {
             return false;
@@ -491,17 +494,20 @@ export class Piano {
 
     _mouseDownKey(e) {
         this._setActive(e.target, this.options.mouseVelocity, 'mouseDown');
+        this.emitter.noteOn(e.target.getAttribute('pui-keyID'), this.options.mouseVelocity, 'mouseDown');
     }
 
 
     _mouseUpKey(e) {
         this._setInactive(e.target, this.options.mouseVelocity, 'mouseUp');
+        this.emitter.noteOff(e.target.getAttribute('pui-keyID'), this.options.mouseVelocity, 'mouseUp');
     }
 
 
     _mouseOverKey(e) {
         if (this.mouseState === MOUSEDOWN) {
             this._setActive(e.target, this.options.mouseVelocity, 'mouseOver');
+            this.emitter.noteOn(e.target.getAttribute('pui-keyID'), this.options.mouseVelocity, 'mouseOver');
         }
     }
 
@@ -509,20 +515,19 @@ export class Piano {
     _mouseOutKey(e) {
         if (this.mouseState === MOUSEDOWN) {
             this._setInactive(e.target, this.options.mouseVelocity, 'mouseOut');
+            this.emitter.noteOff(e.target.getAttribute('pui-keyID'), this.options.mouseVelocity, 'mouseOut');
         }
     }
 
 
-    _setActive(pianoKey, velocity, eventSource) {
+    _setActive(pianoKey) {
         pianoKey.style.backgroundColor = pianoKey.getAttribute('pui-highlightColor');
-        this.emitter.noteOn(pianoKey, velocity, eventSource);
     }
 
 
-    _setInactive(pianoKey, velocity, eventSource) {
+    _setInactive(pianoKey) {
         if (pianoKey) {
             pianoKey.style.backgroundColor = pianoKey.getAttribute('pui-primaryColor');
-            this.emitter.noteOff(pianoKey, velocity, eventSource);
         }
     }
 }

@@ -403,8 +403,7 @@ describe('PianoUI.js - getters and setters', function() {
 
 
 });
-// test all getters and setters
-// invalid values make no changes to ui but log a warning
+
 
 // When amount of piano keys changes through set range, old key objects are properly removed from DOM and memory is freed
 
