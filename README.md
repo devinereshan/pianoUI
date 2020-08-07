@@ -226,6 +226,7 @@ Sets the width of the border surrounding the white keys.
 
 
 # License
+[MIT](https://github.com/devinereshan/pianoUI/blob/master/LICENSE)
 
 # Examples
 
