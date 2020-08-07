@@ -5,9 +5,13 @@ A customizable piano interface for web audio applications.
 # Table of Contents
 
 * [Installation](#installation)
-* [Usage](#Usage)
-    * [Constructor](##Constructor)
-    * [Options](##Options)
+* [Usage](#usage)
+    * [Constructor](##constructor)
+    * [Options](##options)
+    * [Getters / Setters](#getters--setters)
+    * [Events](##events)
+* [License](#license)
+* [Examples](#examples)
 
 # Installation
 Download the source: [PianUI.min.js](https://raw.githubusercontent.com/devinereshan/pianoUI/master/dist/PianoUI.min.js)
@@ -20,7 +24,7 @@ You can include the library with a script tag:
 <div id="piano-container"></div>
 
 <script>
-  let piano = new Piano("#piano-conatiner");
+  let piano = new Piano("#piano-container");
 </script>
 ```
 
@@ -119,9 +123,21 @@ The height of the black keys expressed as a percentage of the height of the pian
 ### `mouseVelocity: 127`
 The default note velocity to be passed to `noteOn` events when a piano key is pressed by a user mouse action.
 
+<!-- <span id="getters"></span> -->
 
 ## Getters / Setters:
 The `Piano` class provides getters and setters for all of the options. Options should not be modified directly, but instead should be updated with the appropriate setter method. Attempting to modify an option directly could break the internal logic of the `Piano` class, resulting in undefined behaviour.
+
+* [setColors(colors)](#setcolorscolors)
+* [getColor(identifier)](#getcoloridentifier)
+* [setKeyActive(number, velocity)](#setkeyactivenumber-velocity)
+* [setKeyInactive(number, velocity)](#setkeyinactivenumber-velocity)
+* [setSize(size)](#setsizesize)
+* [getSize](#getsize)
+* [setRange(range)](#setrangerange)
+* [getRange()](#getrange)
+
+
 
 ### `setColors(colors)`
 Accepts an object with key value pairs corresponding to color options. Color options may be specified in full or in part. Any options not specified will be left unmodified. Any invalid options will be ignored. For example:
@@ -133,27 +149,37 @@ piano.setColors({
 });
 ```
 
+
 ### `getColor(identifier)`
-Returns the string value associated with the key `identifier` in piano options. For example:
+Returns the string value associated with the key `identifier` in the piano color options. For example:
 ```javascript
+// Returns 'gray' if piano is constructed with default options
 piano.getColor('blackKeyBorder');
 ```
-
 
 ### `setKeyActive(number, velocity)`
 Set the specified key as active, which will highlight the key and fire a `noteOn` event as if the key had been clicked and held by the mouse. The first argument, `number`, corresponds to the key being pressed. The second argument indicates the velocity of the keypress and defaults to `options.mouseVelocity` if unspecified. If the current `range` of the piano is set to `[12, 24]`, calling `piano.setKeyActive(12)`, would highlight the first key on the interface. The key will be left active until `piano.setKeyInactive(12)` is called. **Note:** Calling this method on a key which is not displayed will still emit a `noteOn` event, although no visual signal will be produced. This is to allow signals coming from external sources (like a midi controller) to be routed through the interface if desired to prevent duplicate events firing when a single key is pressed.
 
+<span id="setKeyInactive"></span>
 
 ### `setKeyInactive(number, velocity)`
 Set the specified key as inactive, which will fire a `noteOff` event as if the key had been released by the mouse. If the key was previously active, the highlight will be removed. Note, a `noteOff` event will still fire even if the key was not previously active. **Note:** Calling this method on a key which is not displayed will still emit a `noteOn` event, although no visual signal will be produced. This is to allow signals coming from external sources (like a midi controller) to be routed through the interface if desired to prevent duplicate events firing when a single key is pressed.
 
-`setSize(size)`
+<span id="setSize"></span>
+
+### `setSize(size)`
+
+<span id="getSize"></span>
 
 ### `getSize()`
 Returns an array of length two, describing the lowest note and highest note of the piano.
 
+<span id="setRange"></span>
+
 ### `setRange(range)`
 Accepts an array of length two, describing the lowest note and the highest note of the piano. Keys are indexed starting at `C0`, so a value of `0` represents the `C` below the lowest `A` on an 88 key piano. Both values must be greater than or equal to `0` and the computed range (`range[1] - range[0]`) should be positive. Additionally, pianoUI doesn't currently support ranges starting or ending on accidentals. If an accidental is supplied, it will be adjusted to land on the previous white key.
+
+<span id="getRange"></span>
 
 ### `getRange()`
 Returns an array of length two, describing the lowest note and highest note of the piano.
@@ -182,10 +208,6 @@ Returns an array of length two, describing the lowest note and highest note of t
 
 ## Events
 
-
-# Contributing
-
-# Credits
 
 # License
 
