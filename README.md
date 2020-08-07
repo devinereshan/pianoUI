@@ -108,22 +108,21 @@ An object specifying the colors of the ui. The available options and defaults ar
 ```
 
 ### `whiteKeyBorderWidth: '1px'`
-The width of the border surrounding the white keys.
+The width of the border surrounding the white keys. Accepts any string that can be applied to `style.borderWidth`. Defaults to `'1px'`.
 
 ### `blackKeyBorderWidth: '1px'`
-The width of the border surrounding the black keys.
+The width of the border surrounding the black keys. Accepts any string that can be applied to `style.borderWidth`. Defaults to `'1px'`.
 
 
 ### `blackKeyWidthRatio: 0.75`
 The width of the black keys relative to the width of the white keys. Accepts a value between `0` and `1` inclusive, with `0` hiding the body of the black keys entirely and `1` extending the edges of each key to the center of each adjacent white key, effectively making them the same width as the white keys.
 
 ### `blackKeyHeight: '55%'`
-The height of the black keys expressed as a percentage of the height of the piano.
+The height of the black keys expressed as a percentage of the height of the piano. Accepts a string in the range of `'0%'` to `'100%'`. The default is `'55%'`.
 
 ### `mouseVelocity: 127`
 The default note velocity to be passed to `noteOn` events when a piano key is pressed by a user mouse action.
 
-<!-- <span id="getters"></span> -->
 
 ## Getters / Setters:
 The `Piano` class provides getters and setters for all of the options. Options should not be modified directly, but instead should be updated with the appropriate setter method. Attempting to modify an option directly could break the internal logic of the `Piano` class, resulting in undefined behaviour.
@@ -136,6 +135,17 @@ The `Piano` class provides getters and setters for all of the options. Options s
 * [getSize](#getsize)
 * [setRange(range)](#setrangerange)
 * [getRange()](#getrange)
+* [setSizeAndRange()](#setsizeandrangesize-range)
+* [setMouseVelocity(velocity)](#setmousevelocityvelocity)
+* [getMouseVelocity()](#getmousevelocity)
+* [setBlackKeyWidthRatio(ratio)](#setblackkeywidthratioratio)
+* [getBlackKeyWidthRatio()](#getblackkeywidthratio)
+* [setBlackKeyHeight(height)](#setblackkeyheightheight)
+* [getBlackKeyHeight()](#getblackkeyheight)
+* [setBlackKeyBorderWidth(width)](#setblackkeyborderwidthwidth)
+* [getBlackKeyBorderWidth()](#getblackkeyborderwidth)
+* [setWhiteKeyBorderWidth(width)](#setwhitekeyborderwidthwidth)
+* [getWhiteKeyBorderWidth()](#setwhitekeyborderwidth)
 
 
 
@@ -160,51 +170,57 @@ piano.getColor('blackKeyBorder');
 ### `setKeyActive(number, velocity)`
 Set the specified key as active, which will highlight the key and fire a `noteOn` event as if the key had been clicked and held by the mouse. The first argument, `number`, corresponds to the key being pressed. The second argument indicates the velocity of the keypress and defaults to `options.mouseVelocity` if unspecified. If the current `range` of the piano is set to `[12, 24]`, calling `piano.setKeyActive(12)`, would highlight the first key on the interface. The key will be left active until `piano.setKeyInactive(12)` is called. **Note:** Calling this method on a key which is not displayed will still emit a `noteOn` event, although no visual signal will be produced. This is to allow signals coming from external sources (like a midi controller) to be routed through the interface if desired to prevent duplicate events firing when a single key is pressed.
 
-<span id="setKeyInactive"></span>
 
 ### `setKeyInactive(number, velocity)`
 Set the specified key as inactive, which will fire a `noteOff` event as if the key had been released by the mouse. If the key was previously active, the highlight will be removed. Note, a `noteOff` event will still fire even if the key was not previously active. **Note:** Calling this method on a key which is not displayed will still emit a `noteOn` event, although no visual signal will be produced. This is to allow signals coming from external sources (like a midi controller) to be routed through the interface if desired to prevent duplicate events firing when a single key is pressed.
 
-<span id="setSize"></span>
 
 ### `setSize(size)`
 
-<span id="getSize"></span>
 
 ### `getSize()`
 Returns an array of length two, describing the lowest note and highest note of the piano.
 
-<span id="setRange"></span>
 
 ### `setRange(range)`
-Accepts an array of length two, describing the lowest note and the highest note of the piano. Keys are indexed starting at `C0`, so a value of `0` represents the `C` below the lowest `A` on an 88 key piano. Both values must be greater than or equal to `0` and the computed range (`range[1] - range[0]`) should be positive. Additionally, pianoUI doesn't currently support ranges starting or ending on accidentals. If an accidental is supplied, it will be adjusted to land on the previous white key.
+Accepts an array of length two, describing the lowest note and the highest note of the piano. Keys are indexed starting at `C`,  so a value of `0` represents the lowest `C` available. Both values must be greater than or equal to `0` and the computed range (`range[1] - range[0]`) should be positive. Additionally, pianoUI doesn't currently support ranges starting or ending on accidentals. If an accidental is supplied, it will be adjusted to land on the previous white key.
 
-<span id="getRange"></span>
 
 ### `getRange()`
 Returns an array of length two, describing the lowest note and highest note of the piano.
 
-`setSizeAndRange(size, range)`
+### `setSizeAndRange(size, range)`
+A convenience method to set the size and range simultaneously. Under the hood, parts of the ui have to be rebuilt when either option is changed. Updating both values together allows for rebuilding those parts only once. Practically, however, this isn't likely to have much affect on performance for normal use cases.
 
-`setMouseVelocity(velocity)`
+### `setMouseVelocity(velocity)`
+Set the velocity to be passed to `noteOn` events triggered by user mouse actions on the interface. This defaults to 127 to mimic common midi representations of max velocity, but doesn't impose any arbitrary limits or scaling system. You're welcome to provide whatever value your program requires.
 
-`getMouseVelocity()`
+### `getMouseVelocity()`
+Returns the value of the `mouseVelocity` options which is passed to `noteOn` events triggered by user mouse actions on the interface.
 
-`setBlackKeyWidthRatio(ratio)`
+### `setBlackKeyWidthRatio(ratio)`
+Sets the width of the black keys relative to the width of the white keys. Accepts a value between `0` and `1` inclusive, with `0` hiding the body of the black keys entirely and `1` extending the edges of each key to the center of each adjacent white key, effectively making them the same width as the white keys.
 
-`getBlackKeyWidthRatio()`
+### `getBlackKeyWidthRatio()`
+Returns the current value of the `blackKeyWidthRatio` option.
 
-`setBlackKeyHeight(height)`
+### `setBlackKeyHeight(height)`
+Sets the height of the black keys expressed as a percentage of the height of the piano. Accepts a string in the range of `'0%'` to `'100%'`. The default is `'55%'`.
 
-`getBlackKeyHeight()`
+### `getBlackKeyHeight()`
+Returns the height of the black keys expressed as a percentage of the height of the piano.
 
-`setBlackKeyBorderWidth(width)`
+### `setBlackKeyBorderWidth(width)`
+Sets the width of the border surrounding the black keys. Accepts any string that can be applied to `style.borderWidth`. Defaults to `'1px'`.
 
-`getBlackKeyBorderWidth()`
+### `getBlackKeyBorderWidth()`
+Sets the width of the border surrounding the black keys.
 
-`setWhiteKeyBorderWidth(width)`
+### `setWhiteKeyBorderWidth(width)`
+Sets the width of the border surrounding the white keys. Accepts any string that can be applied to `style.borderWidth`. Defaults to `'1px'`.
 
-`getWhiteKeyBorderWidth()`
+### `getWhiteKeyBorderWidth()`
+Sets the width of the border surrounding the white keys.
 
 ## Events
 
