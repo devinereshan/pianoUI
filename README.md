@@ -187,7 +187,7 @@ Set the specified key as active, which will highlight the key and fire a `noteOn
 
 
 #### `setKeyInactive(number, velocity)`
-Set the specified key as inactive, which will fire a `noteOff` event as if the key had been released by the mouse. If the key was previously active, the highlight will be removed. Note, a `noteOff` event will still fire even if the key was not previously active. **Note:** Calling this method on a key which is not displayed will still emit a `noteOn` event, although no visual signal will be produced. This is to allow signals coming from external sources (like a midi controller) to be routed through the interface if desired to prevent duplicate events firing when a single key is pressed.
+Set the specified key as inactive, which will fire a `noteOff` event as if the key had been released by the mouse. If the key was previously active, the highlight will be removed. Note, a `noteOff` event will still fire even if the key was not previously active. **Note:** Calling this method on a key which is not displayed will still emit a `noteOff` event, although no visual signal will be produced. This is to allow signals coming from external sources (like a midi controller) to be routed through the interface if desired to prevent duplicate events firing when a single key is pressed.
 
 
 #### `setSize(size)`
