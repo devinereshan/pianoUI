@@ -25,12 +25,12 @@ Download the source: [PianUI.min.js](https://raw.githubusercontent.com/devineres
 # Usage
 You can include the library with a script tag:
 ```html
-<script src="PianoUI.min.js"></script>
+<script src="./PianoUI.min.js"></script>
 
 <div id="piano-container"></div>
 
 <script>
-  let piano = new Piano("#piano-container");
+  let piano = new PianoUI.Piano("#piano-container");
 </script>
 ```
 
