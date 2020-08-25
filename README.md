@@ -160,7 +160,7 @@ The `Piano` class provides getters and setters for all of the options. Options s
 * [setBlackKeyBorderWidth(width)](#setblackkeyborderwidthwidth)
 * [getBlackKeyBorderWidth()](#getblackkeyborderwidth)
 * [setWhiteKeyBorderWidth(width)](#setwhitekeyborderwidthwidth)
-* [getWhiteKeyBorderWidth()](#setwhitekeyborderwidth)
+* [getWhiteKeyBorderWidth()](#getwhitekeyborderwidth)
 
 
 
